@@ -56,10 +56,15 @@ export default function GameSettingsModal({
             onChange={(e) => setCategory(e.target.value)}
             className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 text-slate-300 cursor-pointer"
           >
-            <option value="عمومی">🧠 اطلاعات عمومی</option>
-            <option value="تکنولوژی">💻 دنیای تکنولوژی</option>
-            <option value="سینما">🎬 فیلم و سینما</option>
-            <option value="نوستالژی">📜 دهه شصت و نوستالژی</option>
+            <option value="" disabled>یک دسته‌بندی انتخاب کنید</option>
+            <option value="عمومی (راحت و متوسط)">🧠 اطلاعات عمومی</option>
+            <option value="تکنولوژی و برنامه نویسی">💻 دنیای تکنولوژی</option>
+            <option value="سینما، فیلم و سریال">🎬 فیلم و سینما</option>
+            <option value="نوستالژی و دهه ۶۰ و ۷۰">📜 دهه شصت و نوستالژی</option>
+            <option value="غذاها، خوراکی‌ها و ترشیجات">🍕 غذاها و خوراکی‌ها</option>
+            <option value="مشاغل و کارهای سخت">👨‍🚒 مشاغل سخت</option>
+            <option value="حیوانات و حیات وحش">🦁 حیوانات</option>
+            <option value="عمومی سخت (بمب پانتومیم)">💣 کلمات خیلی سخت</option>
           </select>
         </div>
 

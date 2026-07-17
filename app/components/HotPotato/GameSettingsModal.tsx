@@ -8,6 +8,7 @@ interface GameSettingsModalProps {
   timer: number;
   setTimer: (time: number) => void;
   category: string;
+  categories: any[];
   setCategory: (category: string) => void;
 }
 
@@ -17,6 +18,7 @@ export default function GameSettingsModal({
   timer,
   setTimer,
   category,
+  categories,
   setCategory,
 }: GameSettingsModalProps) {
   if (!isOpen) return null;
@@ -56,15 +58,13 @@ export default function GameSettingsModal({
             onChange={(e) => setCategory(e.target.value)}
             className="w-full bg-slate-950 border border-slate-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-red-500 text-slate-300 cursor-pointer"
           >
-            <option value="" disabled>یک دسته‌بندی انتخاب کنید</option>
-            <option value="عمومی (راحت و متوسط)">🧠 اطلاعات عمومی</option>
-            <option value="تکنولوژی و برنامه نویسی">💻 دنیای تکنولوژی</option>
-            <option value="سینما، فیلم و سریال">🎬 فیلم و سینما</option>
-            <option value="نوستالژی و دهه ۶۰ و ۷۰">📜 دهه شصت و نوستالژی</option>
-            <option value="غذاها، خوراکی‌ها و ترشیجات">🍕 غذاها و خوراکی‌ها</option>
-            <option value="مشاغل و کارهای سخت">👨‍🚒 مشاغل سخت</option>
-            <option value="حیوانات و حیات وحش">🦁 حیوانات</option>
-            <option value="عمومی سخت (بمب پانتومیم)">💣 کلمات خیلی سخت</option>
+            {categories && categories.map((cat: any) => {
+              return (
+                <option key={cat.value} value={cat.value}>
+                  {cat.title}
+                </option>
+              );
+            })}
           </select>
         </div>
 

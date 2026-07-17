@@ -1,278 +1,193 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
-import { useTimer } from "../../hooks/HotPotato/useTimer";
-import AddPlayerModal from "../../components/HotPotato/AddPlayerModal";
-import GameSettingsModal from "../../components/HotPotato/GameSettingsModal";
+import RequestService from "@/app/services/RequestService";
+import { useEffect, useState } from "react";
+import { io, Socket } from "socket.io-client";
+import { useParams } from "next/navigation";
+import CountdownTimer from "@/app/components/CountDownTimer";
+import SocketService from '@/app/services/SocketService';
 
-interface Player {
-  id: string;
-  name: string;
+interface Payload {
+  sender: string;
+  text: string;
 }
 
-// دیتابیس تستی کلمات برای دسته‌بندی‌ها
-const WORDS_DATABASE: Record<string, string[]> = {
-  "عمومی (راحت و متوسط)": [
-    "پیتزا", "تراکتور", "آتشفشان", "برج ایفل", "اقیانوس", "هلیکوپتر", "شکلات", "کره زمین", "کیک تولد", "مداد رنگی",
-    "جوراب سوراخ", "مسواک", "چتر نجات", "مترسک", "آهنربا", "کیف قاپ", "کفش دوزک", "دایناسور", "ساعت شنی", "ماشین لباسشویی",
-    "جاروبرقی", "بند کفش", "عینک آفتابی", "سفر فضایی", "قطب‌نما", "کیسه خواب", "تلسکوپ", "دستگیره در", "خط‌کش", "قفل فرمان",
-    "آکواریوم", "بادکنک هیلیومی", "دستکش بوکس", "تخته سیاه", "میکروسکوپ", "نقشه گنج", "کلاه‌ایمنی", "کلید زنگ‌زده", "چمدان چرخ‌دار", "چکش تخریب",
-    "سوت داور", "چای کیسه‌ای", "مگس‌کش", "آب‌پاش", "موج زئوس", "کاکتوس", "بادبادک", "سطل زباله", "دستمال کاغذی", "فرش دستباف"
-  ],
-  "عمومی سخت (بمب پانتومیم)": [
-    "وجدان بیدار", "آب زیر کاه", "سنگ پای قزوین", "مرغ همسایه غازه", "شتر دیدی ندیدی", "شکست عشقی", "سکوت مطلق", "سرگیجه دورانی", "بوقلمون صفت", "خربزه ابوجهل",
-    "استخوان لای زخم", "از کوره در رفتن", "دندان لق", "آش دهان‌سوز", "کاسه داغ‌تر از آش", "گاو پیشانی سفید", "یخ‌بندان قطبی", "شستشوی مغزی", "توهم فانتزی", "سیاه‌چاله فضایی",
-    "زیرآب‌زنی", "دوپینگ ورزشی", "طلبکار طلب‌کار", "ضرب‌العجل", "روان‌پریشی", "خواب خرگوشی", "شاهنامه آخرش خوشه", "بادمجان بم آفت ندارد", "دست‌انداز جاده", "چشم‌بصیرت"
-  ],
-  "تکنولوژی و برنامه نویسی": [
-    "هوش مصنوعی", "بلاکچین", "سورس کد", "سرور", "میکروچیپ", "الگوریتم", "پایتون", "اینترنت اشیاء", "واقعیت مجازی", "متاورس",
-    "فایروال", "دیتابیس", "مودم وای‌فای", "صفحه لمسی", "کارت گرافیک", "پاوربانک", "فیلترشکن", "کریپتوکارنسی", "جی‌پاس(GPS)", "سیستم عامل",
-    "هارد اکسترنال", "چت‌بات", "هدست واقعیت ترکیبی", "پرینتر سه‌بعدی", "مهندسی معکوس", "حمله سایبری", "کدهای باینری", "اسکریپت", "هکر کلاه سفید", "باگ نرم‌افزاری",
-    "حافظه کش", "رابط کاربری", "شبکه همتا به همتا", "رایانش ابری", "مسیریاب (روتر)", "امضای دیجیتال", "کلید خصوصی", "پردازش ابری", "توسعه‌دهنده فرانت‌اندمان", "کامپایلر"
-  ],
-  "سینما، فیلم و سریال": [
-    "آواتار", "بتمن", "کریستوفر نولان", "اسکار", "تایتانیک", "پدرخوانده", "انیمیشن", "جلوه‌های ویژه", "بدلکار", "موسیقی متن",
-    "صداگذار", "کارگردان", "سکانس پلان", "ژانر وحشت", "سینمای صامت", "مرد عنکبوتی", "جوکر", "هری پاتر", "ارباب حلقه‌ها", "فرار از زندان",
-    "پاپ‌کورن سینما", "صندلی تاشو", "پوستر فیلم", "کلپ‌بورد (تخته پلان)", "بازیگر نقش اول", "لوکیشن فیلمبرداری", "نامزد جایزه کن", "سریال شهرزاد", "مختارنامه", "اخراجی‌ها",
-    "فیلمبرداری روی دست", "تدوین‌گر فیلم", "فیلم‌نامه اقتباسی", "ژانر علمی تخیلی", "شهرت جهانی", "مرد آهنی", "بازی تاج و تخت", "سینمای خانگی", "باکس آفیس", "سه‌بعدی آی‌مکس"
-  ],
-  "نوستالژی و دهه ۶۰ و ۷۰": [
-    "آتاری", "توپ پلاستیکی", "کارتون فوتبالیست‌ها", "تلفن کارتی", "نوار کاست", "کارت بازی صدآفرین", "تیله‌بازی", "آدامس خرسی", "دفتر تعاونی", "سگا",
-    "بستنی توپی", "پپسی شیشه‌ای", "میکرو دکمه‌ای", "چراغ موشی", "کارتون کلاه قرمزی", "پیک شادی", "سکه ۵۰ تومانی", "جوجه رنگی", "خط‌کشی با خودکار قرمز و آبی", "تراش رومیزی",
-    "آب‌نبات چوبی قیچی", "بخاری نفتی علاءالدین", "لیوان تاشو پلاستیکی", "فیلم ویدیو گوزن‌ها", "خاله قورباغه", "بازی قارچ خور", "ورق‌های امتحانی کاهی", "گچ رنگی", "کش‌کش‌بازی", "موتور هندا ۱۲۵"
-  ],
-  "غذاها، خوراکی‌ها و ترشیجات": [
-    "قرمه سبزی", "کله پاچه", "فست فود", "بستنی سنتی زعفرانی", "سیرترشی هفت ساله", "آش رشته", "کباب کوبیده", "فالوده شیرازی", "پشمک حاج عبدالله", "گوجه سبز",
-    "لواشک ترش", "شله زرد", "ماکارونی با ته دیگ سیب‌زمینی", "حلیم با شکر", "سمنو", "دیزی سنگی", "کشک بادمجان", "میرزا قاسمی", "خورشت فسنجان فسفری", "جوجه کباب با استخوان",
-    "زیتون پرورده شمال", "باقالی پلو با ماهیچه", "آبدوغ خیار تگری", "پلو زعفرانی", "سالاد الویه", "ترشی لیته", "آش شل ملق", "کوفته تبریزی", "دلمه برگ مو", "کباب بختیاری"
-  ],
-  "مشاغل و کارهای سخت": [
-    "فضانورد", "جوشکاری در اعماق دریا", "راننده پایه یک", "برج‌مراقبت پرواز", "شیشه‌شوی برج‌های بلند", "معدن‌چی", "آتشنشان", "جراح مغز و اعصاب", "بازرس خطوط گاز", "کارآگاه خصوصی",
-    "بندباز سیرک", "مربی شیرهای وحشی", "مأمور وصول مالیات", "ملوان کشتی باربری", "پاکبان شب‌کار", "شکارچی طوفان", "سیم‌بان برق فشار قوی", "غواص مروارید", "تک‌تیرانداز مرزی", "مستندساز حیات وحش"
-  ],
-  "حیوانات و حیات وحش": [
-    "خرس قطبی", "شترمرغ غول‌پیکر", "کروکودیل نیل", "خرچنگ نعل‌اسبی", "پلنگ سیاه", "شاهین تیزپرواز", "مار زنگی", "فیل آفریقایی", "کوالای تنبل", "سفره‌ماهی برقی",
-    "آفتاب‌پرست درخت‌نشین", "پنگوئن امپراتور", "کفتار راه‌راه", "اسب آبی خشمگین", "سنجاب پرنده", "شیر دریایی", "روباه مکار", "گرگ خاکستری", "مورچه‌خوار بزرگ", "نهنگ قاتل"
-  ]
-};
+interface RoomInterface {
+  id: string
+  category_id: string
+  pincode: string
+  minutes: number
+  status: string
+  activate: boolean
+  createdAt: string
+  updatedAt: string
+}
 
-// لیست رنگ‌های نئونی برای جفت‌های روبرو
-const PAIR_COLORS = [
-  "border-cyan-500 text-cyan-400 shadow-[0_0_10px_rgba(6,182,212,0.3)]",
-  "border-purple-500 text-purple-400 shadow-[0_0_10px_rgba(168,85,247,0.3)]",
-  "border-amber-500 text-amber-400 shadow-[0_0_10px_rgba(245,158,11,0.3)]",
-  "border-pink-500 text-pink-400 shadow-[0_0_10px_rgba(236,72,153,0.3)]",
-  "border-blue-500 text-blue-400 shadow-[0_0_10px_rgba(59,130,246,0.3)]",
-];
 
-export default function GameRoom() {
-  const [players, setPlayers] = useState<Player[]>([]);
+const HotPotatoPage = () => {
 
-  const [activePlayerIndex, setActivePlayerIndex] = useState<number>(0);
-  const [isGameStarted, setIsGameStarted] = useState(false);
-  const [loser, setLoser] = useState<Player | null>(null);
+  const params = useParams();
 
-  // استیت‌های مربوط به کلمه جاری
-  const [currentWord, setCurrentWord] = useState<string>("");
+  const [payload, setPayload] = useState<Payload>({ sender: '', text: '' });
+  const [title, setTitle] = useState<string>('');
+  const [message, setMessage] = useState<string>('33');
+  const [categories, setCategories] = useState([]);
+  const [room, setRoom] = useState<RoomInterface>({ id: '', category_id: '', pincode: '', minutes: 0, status: '', activate: true, createdAt: '', updatedAt: '' });
+  const [players, setPlayers] = useState([]);
+  const [player, setPlayer] = useState<string>('');
+  const [subCategoryTitle, setSubCategoryTitle] = useState<string>('');
+  const [action, setAction] = useState<boolean>(true);
+  
+  const [timer, setTimer] = useState<number>(0);
 
-  // مدیریت مودال‌ها و تنظیمات
-  const [isPlayerModalOpen, setIsPlayerModalOpen] = useState(false);
-  const [isSettingsModalOpen, setIsSettingsModalOpen] = useState(false);
-  const [newPlayerName, setNewPlayerName] = useState("");
-  const [gameTimer, setGameTimer] = useState(30); 
-  const [selectedCategory, setSelectedCategory] = useState("عمومی");
+  useEffect(() => {
 
-  const { timeLeft, isActive, startTimer, stopTimer } = useTimer(gameTimer, () => {
-    setLoser(players[activePlayerIndex]);
-    setIsGameStarted(false);
-  });
+    const socket = new SocketService();
+    const connect = socket.connect();
 
-  // متد انتخاب کلمه تصادفی بر اساس دسته‌بندی
-  const generateRandomWord = (category: string) => {
-    const words = WORDS_DATABASE[category] || WORDS_DATABASE["عمومی"];
-    const randomIndex = Math.floor(Math.random() * words.length);
-    setCurrentWord(words[randomIndex]);
-  };
+    connect.emit('messageToServer', params?.id as string, (response: any) => {
 
-  const handleStartGame = () => {
-    setLoser(null);
-    setActivePlayerIndex(0);
-    setIsGameStarted(true);
-    generateRandomWord(selectedCategory); // انتخاب اولین کلمه
-    startTimer();
-  };
+      setPlayers(response.players);
 
-  const handleNextTurn = () => {
-    if (!isActive) return;
-    // تغییر نوبت به نفر بعدی
-    setActivePlayerIndex((prevIndex) => (prevIndex + 1) % players.length);
-    // تغییر کلمه برای نفر بعدی
-    generateRandomWord(selectedCategory);
-  };
+      connect.emit('startTimer', (response: string) => {
+        console.log(response);
+      });
 
-  const addPlayerSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!newPlayerName.trim()) return;
-    setPlayers([...players, { id: Date.now().toString(), name: newPlayerName.trim() }]);
-    setNewPlayerName("");
-    setIsPlayerModalOpen(false);
-  };
+    });
 
-  // تابع تعیین رنگ بازیکن بر اساس جفت روبرو بودن
-  const getPlayerPairColor = (index: number) => {
-    const N = players.length;
-    // پیدا کردن شناسه جفت (ایندکس کوچک‌تر بین دو نفر روبرو)
-    const pairId = index < N / 2 ? index : index - N / 2;
-    // بازگرداندن رنگ اختصاصی این جفت از آرایه رنگ‌ها
-    return PAIR_COLORS[pairId % PAIR_COLORS.length];
-  };
+    socket.on('timerUpdate', (timeLeft: number) => {
+      setTimer(timeLeft);
+      console.log(timeLeft);
+    });
 
-  const isEven = players.length % 2 === 0;
-  const canStart = isEven && players.length >= 4;
+    socket.on('timerFinished', (message: string) => {
+      console.log(message);
+    });
 
-  const isWarning = timeLeft <= gameTimer / 2 && timeLeft > 10;
-  const isCritical = timeLeft <= 10;
+    socket.on('updateTurn', (data: { nextPlayerName: string, nextPlayerId: string, subCategoryTitle: string}) => {
+      setPlayer(data.nextPlayerName);
+      setSubCategoryTitle(data.subCategoryTitle);
+
+      if (data.nextPlayerId !== localStorage.getItem('player_id')) {
+        setAction(false);
+      } else {
+        setAction(true);
+      }
+    })
+
+    return () => {
+      socket.off('timerUpdate');
+      socket.off('timerFinished');
+      socket.disconnect();
+    }
+  }, []);
+
+  const onClickHandler = () => {
+    const socket = new SocketService();
+    const connect = socket.connect();
+
+    connect.emit('playerTurn', (response: any) => {
+
+
+    });
+
+  }
 
   return (
-    <div className="flex flex-col items-center justify-between min-h-screen bg-slate-950 text-slate-100 p-6 font-sans select-none overflow-hidden relative">
+    <div className="min-h-screen bg-[#0d0e15] bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-[#1a1c29] via-[#0d0e15] to-[#050508] text-white font-mono flex flex-col items-center justify-center p-4 selection:bg-cyan-500 selection:text-black">
       
-      {/* هدر */}
-      <header className="text-center my-2 z-10">
-        <h1 className="text-4xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-400 drop-shadow-[0_0_15px_rgba(239,68,68,0.5)]">
-          HOT POTATO
-        </h1>
-        <p className="text-xs text-slate-400 mt-1 uppercase tracking-widest">
-          Category: <span className="text-orange-400 font-bold">{selectedCategory}</span>
-        </p>
-      </header>
-
-      {/* بخش مرکزی: دایره بازیکنان + باکس کلمه + بمب */}
-      <main className="relative flex items-center justify-center w-full max-w-[480px] aspect-square my-2 z-10">
+      {/* کانتینر اصلی آرکید */}
+      <div className="w-full max-w-md bg-[#121420]/90 border-2 border-magenta-500 rounded-2xl p-6 md:p-8 shadow-[0_0_30px_rgba(236,72,153,0.3)] backdrop-blur-md relative overflow-hidden before:absolute before:top-0 before:left-0 before:w-full before:h-1 before:bg-gradient-to-r before:from-cyan-500 before:via-magenta-500 before:to-yellow-500">
         
-        {/* المان‌های مرکزی (باکس کلمه و بمب زیر هم) */}
-        <div className="absolute flex flex-col items-center gap-4 z-20">
-          
-          {/* نمایش کلمه جاری بازی */}
-          {isGameStarted && currentWord && (
-            <div className="bg-slate-900/90 border border-orange-500/40 px-6 py-2.5 rounded-xl text-center shadow-[0_0_20px_rgba(249,115,22,0.15)] animate-fadeIn">
-              <span className="text-[10px] text-slate-500 uppercase tracking-widest block mb-0.5">کلمه شما</span>
-              <span className="text-xl font-black text-orange-400 tracking-wide">{currentWord}</span>
-            </div>
-          )}
-
-          {/* بمب و تایمر */}
-          <div className={`w-32 h-32 rounded-full bg-slate-900 border-4 flex flex-col items-center justify-center transition-all duration-300 ${
-            loser ? "border-red-800 shadow-[0_0_50px_rgba(239,68,68,0.8)]" :
-            isCritical ? "border-red-500 shadow-[0_0_30px_rgba(239,68,68,0.6)] animate-pulse" :
-            isWarning ? "border-amber-500 shadow-[0_0_20px_rgba(245,158,11,0.4)]" :
-            isActive ? "border-emerald-500 shadow-[0_0_15px_rgba(16,185,129,0.2)]" : "border-dashed border-slate-800"
-          }`}>
-            <span className={`text-4xl ${isCritical && isActive ? "animate-bounce" : ""}`}>
-              {loser ? "💥" : "💣"}
+        {/* هدر یا عنوان اصلی اتاق */}
+        {title && (
+          <div className="text-center mb-6">
+            <span className="text-xs font-bold uppercase tracking-widest text-cyan-400 block mb-1 animate-pulse">
+              Live Arena
             </span>
-            <span className="text-lg font-mono font-bold mt-1">
-              {loser ? "BOOM!" : isActive ? `${timeLeft}s` : "READY"}
+            <h2 className="text-xl font-black text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-blue-500 drop-shadow-[0_2px_8px_rgba(34,211,238,0.4)] truncate">
+              {title}
+            </h2>
+          </div>
+        )}
+
+        {players && players.map((player) => (
+          <h1>{player}</h1>
+        ))}
+
+        {/* بخش تایمر (Neon Glow Circle) */}
+        <div className="flex flex-col items-center justify-center mb-8 relative">
+          <div className="w-32 h-32 rounded-full border-4 border-yellow-400 flex flex-col items-center justify-center shadow-[0_0_20px_rgba(234,179,8,0.4),inset_0_0_15px_rgba(234,179,8,0.2)] bg-[#1a1d30]">
+            <span className="text-xs uppercase tracking-wider text-yellow-500 font-semibold mb-1">
+              Timer
+            </span>
+            <span className="text-3xl font-extrabold text-yellow-300 drop-shadow-[0_0_6px_rgba(234,179,8,0.6)]">
+              {timer ?? '--:--'}
             </span>
           </div>
         </div>
 
-        {/* رندر دایره‌ای بازیکنان با رنگ‌بندی زوج‌های روبرو */}
-        {players.map((player, index) => {
-          const isCurrentTurn = isGameStarted && index === activePlayerIndex;
-          
-          const total = players.length;
-          const angle = (index * 2 * Math.PI) / total;
-          const radius = isCurrentTurn ? 38 : 43; 
-          const x = 50 + radius * Math.cos(angle);
-          const y = 50 + radius * Math.sin(angle);
-
-          // گرفتن رنگ جفت روبرو
-          const pairColorClass = getPlayerPairColor(index);
-
-          return (
-            <div
-              key={player.id}
-              className="absolute -translate-x-1/2 -translate-y-1/2 transition-all duration-500 z-10"
-              style={{ top: `${y}%`, left: `${x}%` }}
-            >
-              <div className="flex flex-col items-center gap-1">
-                {/* آواتار بازیکن */}
-                <div className={`rounded-full flex items-center justify-center font-bold transition-all duration-300 ${
-                  isCurrentTurn
-                    ? "w-18 h-18 text-xl bg-red-950 border-4 border-red-500 text-red-400 shadow-[0_0_25px_rgba(239,68,68,0.8)] scale-110 animate-pulse"
-                    : `w-13 h-13 text-base bg-slate-900 border-2 ${pairColorClass}`
-                }`}>
-                  {player.name.charAt(0)}
-                </div>
-                
-                {/* نام بازیکن */}
-                <div className="flex flex-col items-center">
-                  <span className={`text-[11px] font-bold px-2 py-0.5 rounded border transition-all ${
-                    isCurrentTurn 
-                      ? "bg-red-500 text-black border-red-400 shadow-[0_0_10px_rgba(239,68,68,0.4)]" 
-                      : "bg-slate-900/80 text-slate-300 border-slate-800"
-                  }`}>
-                    {player.name}
-                  </span>
-                </div>
-              </div>
-            </div>
-          );
-        })}
-      </main>
-
-      {/* بخش فوتر و دکمه‌ها */}
-      <footer className="w-full max-w-md flex flex-col gap-4 z-10">
-        {isActive ? (
-          <button
-            onClick={handleNextTurn}
-            className="w-full bg-gradient-to-r from-emerald-600 to-teal-500 text-white font-extrabold py-5 rounded-2xl text-lg tracking-wide shadow-[0_0_30px_rgba(16,185,129,0.4)] border border-emerald-400 active:scale-95 transition-all uppercase animate-pulse"
-          >
-            پاس دادن بمب (NEXT PLAYER) ➔
-          </button>
-        ) : (
-          <button
-            disabled={!canStart}
-            onClick={handleStartGame}
-            className={`w-full py-5 rounded-2xl font-extrabold text-base tracking-wide transition-all uppercase ${
-              canStart
-                ? "bg-gradient-to-r from-red-600 to-orange-500 hover:from-red-500 hover:to-orange-400 text-white shadow-[0_4px_25px_rgba(239,68,68,0.5)] cursor-pointer active:scale-95"
-                : "bg-slate-800 text-slate-500 cursor-not-allowed border border-slate-800"
-            }`}
-          >
-            {loser ? "🔄 بازی مجدد" : "شروع مسابقه (START GAME)"}
-          </button>
-        )}
-
-        {!isActive && (
-          <div className="grid grid-cols-2 gap-3">
-            <button onClick={() => setIsPlayerModalOpen(true)} className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 py-3 rounded-xl text-sm font-medium transition-colors">
-              ➕ افزودن بازیکن
-            </button>
-            <button onClick={() => setIsSettingsModalOpen(true)} className="bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-300 py-3 rounded-xl text-sm font-medium transition-colors">
-              ⚙ تنظیمات بازی
-            </button>
+        {/* بخش اطلاعات بازی (نوبت و کلمه) */}
+        <div className="space-y-4 mb-8">
+          {/* نوبت */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-[#181b2e] border border-cyan-500/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+            <span className="text-sm font-bold text-cyan-400 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              نوبت:
+            </span>
+            <span className="text-base font-black text-white tracking-wide">
+              {/* مقدار نوبت را اینجا بگذار */}
+              {player}
+            </span>
           </div>
-        )}
-      </footer>
 
-      {/* پاپ‌آپ باخت */}
-      {loser && (
-        <div className="fixed inset-0 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 z-50 animate-fadeIn">
-          <div className="text-center max-w-sm flex flex-col items-center gap-4">
-            <span className="text-8xl animate-bounce">💥</span>
-            <h2 className="text-3xl font-black text-red-500 tracking-wider drop-shadow-[0_0_20px_rgba(239,68,68,0.6)]">بمب منفجر شد!</h2>
-            <div className="bg-red-950/50 border-2 border-red-500 px-8 py-4 rounded-2xl text-2xl font-black text-red-400 shadow-[0_0_30px_rgba(239,68,68,0.4)] my-2">
-              💀 {loser.name} 💀
-            </div>
-            <button onClick={() => setLoser(null)} className="mt-6 bg-slate-800 hover:bg-slate-700 text-slate-200 px-6 py-2.5 rounded-xl text-sm font-medium border border-slate-700 transition-colors">بستن و بازگشت</button>
+          <div className="flex items-center justify-between p-4 rounded-xl bg-[#181b2e] border border-cyan-500/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+            <span className="text-sm font-bold text-cyan-400 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+              نام شما:
+            </span>
+            <span className="text-base font-black text-white tracking-wide">
+              {localStorage.getItem('player_name')}
+            </span>
+          </div>
+
+          {/* کلمه */}
+          <div className="flex items-center justify-between p-4 rounded-xl bg-[#181b2e] border border-magenta-500/30 shadow-[inset_0_2px_4px_rgba(0,0,0,0.6)]">
+            <span className="text-sm font-bold text-magenta-400 flex items-center gap-2">
+              <span className="w-2 h-2 rounded-full bg-magenta-500" />
+              کلمه:
+            </span>
+            <span className="text-base font-black text-white bg-magenta-950/40 px-3 py-1 rounded border border-magenta-500/20 text-magenta-300 drop-shadow-[0_0_4px_rgba(236,72,153,0.4)]">
+              {/* مقدار کلمه را اینجا بگذار */}
+              {subCategoryTitle}
+            </span>
           </div>
         </div>
-      )}
 
-      {/* مودال‌ها */}
-      <AddPlayerModal isOpen={isPlayerModalOpen} onClose={() => setIsPlayerModalOpen(false)} playerName={newPlayerName} setPlayerName={setNewPlayerName} onSubmit={addPlayerSubmit} />
-      <GameSettingsModal isOpen={isSettingsModalOpen} onClose={() => setIsSettingsModalOpen(false)} timer={gameTimer} setTimer={setGameTimer} category={selectedCategory} setCategory={setSelectedCategory} />
+        {/* دکمه اکشن آرکید */}
+        <button
+          onClick={onClickHandler}
+          disabled={!action}
+          className="
+            w-full py-4 bg-gradient-to-r from-magenta-600 to-pink-500 hover:from-magenta-500 hover:to-pink-400 text-white font-black uppercase tracking-wider rounded-xl border-b-4 border-magenta-800 active:border-b-0 active:translate-y-1 transition-all duration-75 shadow-[0_0_15px_rgba(236,72,153,0.4)] hover:shadow-[0_0_25px_rgba(236,72,153,0.6)] text-center text-lg cursor-pointer
+            disabled:from-gray-700 disabled:to-gray-600 disabled:border-gray-800 
+            disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-50 disabled:translate-y-0
+          "
+        >
+          Click me
+        </button>
+
+        {/* متن پی‌لود در پایین صفحه */}
+        {payload?.text && (
+          <div className="mt-6 p-3 bg-black/40 rounded-lg border border-gray-800 text-center text-xs text-gray-400 font-sans">
+            {payload.text}
+          </div>
+        )}
+
+      </div>
     </div>
   );
+
 }
+
+export default HotPotatoPage;

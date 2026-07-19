@@ -21,7 +21,7 @@ export default function MainDashboard() {
       title: "HOT POTATO",
       persianTitle: "بمب ساعتی کلمات",
       description: "یک بازی گروهی و هیجان‌انگیز! کلمه را حدس بزن و بمب را قبل از انفجار به نفر بعدی پاس بده.",
-      route: "/games/hotpotato", // مسیر ثابت برای جلوگیری از رندرهای ناخواسته nanoid
+      route: "/hotpotato", // مسیر ثابت برای جلوگیری از رندرهای ناخواسته nanoid
       icon: "💣",
       status: "active",
       badgeColor: "bg-red-500 text-white",

@@ -49,7 +49,9 @@ const HotPotatoPage = () => {
     connect.on('start', (response: { subCategoryTitle: string, nextPlayerName: string, players: [], minutes: number }) => {
       setSubCategoryTitle(response.subCategoryTitle);
       setPlayer(response.nextPlayerName);
+      console.log(response.nextPlayerName);
       setPlayers(response.players);
+      console.log(response.players);
       setTimer(response.minutes * 60);
     });
 

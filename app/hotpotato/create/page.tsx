@@ -50,10 +50,8 @@ const HotPotatoCreatePage = () => {
 
     return (
         <div className={theme.canvas}>
-            {/* افکت نوری پس‌زمینه */}
             <div className={theme.ambientLights.topRed} />
 
-            {/* بخش نمایش پین‌کد و QR Code (فقط در صورت وجود پین‌کد فعال می‌شود) */}
             {room.pincode !== 0 && (
                 <div className={`${theme.card.wrapper} w-full max-w-md bg-slate-900/80 border-cyan-500/20 shadow-[0_0_30px_rgba(6,182,212,0.15)] p-6 mb-6 text-center relative overflow-hidden`}>
                     <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
@@ -62,7 +60,6 @@ const HotPotatoCreatePage = () => {
                         Room Access
                     </span>
                     
-                    {/* نمایش پین‌کد با استایل گیمینگ */}
                     <div className="mb-4">
                         <p className="text-[10px] uppercase tracking-widest text-slate-500 font-mono mb-1">Room PIN</p>
                         <span className="text-4xl font-mono font-black tracking-[0.25em] pl-[0.25em] text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-teal-400 drop-shadow-[0_0_10px_rgba(6,182,212,0.3)]">
@@ -70,9 +67,8 @@ const HotPotatoCreatePage = () => {
                         </span>
                     </div>
 
-                    {/* کامپوننت کامپکت QR Code */}
                     <div className="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80 w-max mx-auto backdrop-blur-sm">
-                        <QRCodeComponent text={`${process.env.NEXT_PUBLIC_BASE_URL}/hotpotato/${room.id.toString()}`} />
+                        <QRCodeComponent text={`${process.env.NEXT_PUBLIC_APP_URL}/hotpotato/join/${room.pincode.toString()}`} />
                     </div>
                     
                     <p className="text-[11px] text-slate-400 font-medium mt-3" dir="rtl">
@@ -81,7 +77,6 @@ const HotPotatoCreatePage = () => {
                 </div>
             )}
 
-            {/* کارت اصلی تنظیمات اتاق بازی */}
             <div className={`${theme.card.wrapper} w-full max-w-md bg-slate-900/80 border-slate-800/80 shadow-2xl relative p-6 md:p-8`}>
                 
                 <div className="text-center mb-6">
@@ -95,7 +90,6 @@ const HotPotatoCreatePage = () => {
                 </div>
 
                 <form onSubmit={onSubmitHandler} className="space-y-5">
-                    {/* انتخاب دسته‌بندی */}
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-400 block px-1">
                             Select Category
@@ -125,7 +119,6 @@ const HotPotatoCreatePage = () => {
                         </div>
                     </div>
 
-                    {/* فیلد مدت زمان بازی */}
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-400 block px-1">
                             Duration (Minutes)
@@ -140,26 +133,30 @@ const HotPotatoCreatePage = () => {
                         />
                     </div>
 
-                    {/* دکمه ارسال فرم */}
                     <button 
                         type="submit"
-                        className="w-full mt-2 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-extrabold uppercase tracking-wider rounded-xl border border-slate-600/50 active:scale-[0.99] transition-all duration-150 shadow-md text-center text-sm cursor-pointer"
+                        disabled={room.pincode !== 0}
+                        className="
+                            disabled:from-slate-900 disabled:to-slate-900 disabled:border-slate-800/40 
+                            disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-40
+                            w-full mt-2 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-extrabold uppercase tracking-wider rounded-xl border border-slate-600/50 active:scale-[0.99] transition-all duration-150 shadow-md text-center text-sm cursor-pointer"
                     >
                         Create Room
                     </button>
                 </form>
 
-                {/* فوتر کارت برای دکمه بازگشت یا اتصال */}
-                <div className={`${theme.card.footer} mt-6`}>
-                    <span className={theme.card.actionText}>Already have a room?</span>
-                    <Link 
-                        href='/hotpotato/join'
-                        className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 group/link"
-                    >
-                        Join Room 
-                        <span className={`${theme.card.arrow} inline-block group-hover/link:translate-x-1`}>→</span>
-                    </Link>
-                </div>
+                {room.pincode !== 0 && (
+                    <div className={`${theme.card.footer} mt-6`}>
+                        <span className={theme.card.actionText}>Already have a room?</span>
+                        <Link 
+                            href={`/hotpotato/join/` + room.pincode}
+                            className="text-xs font-bold text-cyan-400 hover:text-cyan-300 transition-colors flex items-center gap-1 group/link"
+                        >
+                            Join Room 
+                            <span className={`${theme.card.arrow} inline-block group-hover/link:translate-x-1`}>→</span>
+                        </Link>
+                    </div>
+                )}
 
             </div>
         </div>

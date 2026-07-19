@@ -2,23 +2,44 @@
 
 import { ArcadeNeonTheme as theme } from "@/app/theme/arcade-theme";
 
+import { useParams } from "next/navigation";
 import { useRouter } from 'next/navigation';
 import RequestService from "@/app/services/RequestService";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
+
+interface Room {
+    id: string
+}
+
+const INITIAL_ROOM = {
+    id: '',
+}
 
 const HotPotatoJoinPage = () => {
+
+    const params = useParams();
 
     const router = useRouter();
 
     const [name, setName] = useState(String);
-    const [pincode, setPincode] = useState(String);
+    const [room, setRoom] = useState<Room>(INITIAL_ROOM);
+
+    useEffect(() => {
+
+        const getRoomHandler = async () => {
+            const response = new RequestService('/room/pincode/' + params?.pincode as string);
+            const data = await response.get();
+
+            setRoom(data);
+            localStorage.setItem('room_id', data.id);
+        }
+
+        getRoomHandler();
+
+    }, []);
 
     const onChangeNameHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setName(e.target.value);
-    }
-
-    const onChangePincodeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPincode(e.target.value);
     }
 
     const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -26,17 +47,16 @@ const HotPotatoJoinPage = () => {
 
         const payload = {
             name: name,
-            pincode: pincode
+            pincode: params?.pincode as string
         }
 
         const player = new RequestService('/room/player');
         const data = await player.post(payload);
 
         if (data) {
-            localStorage.setItem('room_id', data.room_id);
             localStorage.setItem('player_id', data.id);
             localStorage.setItem('player_name', data.player_name);
-            router.push('/hotpotato/' + data.room_id);
+            router.push('/hotpotato/' + room.id);
         }
     }
 
@@ -67,19 +87,6 @@ const HotPotatoJoinPage = () => {
                             placeholder="Enter your nickname" 
                             onChange={onChangeNameHandler} 
                             className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/30 transition-all"
-                        />
-                    </div>
-
-                    <div className="space-y-1.5">
-                        <label className="text-xs font-bold text-slate-400 block px-1">
-                            Room Pin Code
-                        </label>
-                        <input 
-                            type="text" 
-                            name="pincode" 
-                            placeholder="Enter 4 or 6-digit code" 
-                            onChange={onChangePincodeHandler}
-                            className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium tracking-wider placeholder-slate-600 focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/30 transition-all text-left"
                         />
                     </div>
 

@@ -52,7 +52,7 @@ const HotPotatoPage = () => {
       console.log(response.nextPlayerName);
       setPlayers(response.players);
       console.log(response.players);
-      setTimer(response.minutes * 60);
+      setTimer(response.minutes);
     });
 
     socket.on('timerUpdate', (timeLeft: number) => {

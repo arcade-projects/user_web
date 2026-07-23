@@ -1,8 +1,18 @@
-import Cookies from "universal-cookie";
-import toastService from "./ToastService";
+import Cookies from 'universal-cookie';
+import ToastService from './ToastService';
 
 const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
-const APPLICATION_JSON = "application/json";
+const METHOD_GET = 'GET';
+const METHOD_POST = 'POST';
+const METHOD_PATCH = 'PATCH';
+const METHOD_DELETE = 'DELETE';
+const APPLICATION_JSON = 'application/json';
+const APPLICATION_FORM_DATA = 'application/form-data';
+
+interface ApiResponse {
+  message: string;
+  [key: string]: any;
+}
 
 class RequestService {
   private readonly endpoint: string;
@@ -10,67 +20,141 @@ class RequestService {
 
   constructor(endpoint: string) {
     this.endpoint = endpoint;
-    this.cookies = new Cookies(null, { path: "/" });
+    this.cookies = new Cookies(null, { path: '/' });
   }
-
-  async get(params = ""): Promise<any> {
+  async get(params = ''): Promise<any> {
     try {
       const response = await fetch(BASE_URL + this.endpoint + params, {
-        method: "GET",
+        method: METHOD_GET,
         headers: this.getHeaders(),
-        credentials: "include",
       });
 
-      if (!response.ok) throw new Error("خطا در دریافت اطلاعات");
       return await response.json();
     } catch (error) {
-      console.error(error);
+      console.log(error);
       return null;
     }
   }
 
   async post(payload?: object): Promise<any> {
-    const toastId = toastService.showLoading();
-
     try {
+      ToastService.showLoading();
+
       const isFormData = payload instanceof FormData;
 
       const response = await fetch(BASE_URL + this.endpoint, {
-        method: "POST",
+        method: METHOD_POST,
         headers: {
           ...this.getHeaders(),
-          ...(isFormData ? {} : { "Content-Type": APPLICATION_JSON }),
+          ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
         },
         body: isFormData ? payload : JSON.stringify(payload),
-        credentials: "include",
       });
 
-      const data = await response.json();
+      const data: ApiResponse = await response.json();
 
-      if (response.ok) {
-        toastService.updateSuccess(toastId, data?.message);
+      if (response.status === 200) {
+        ToastService.updateSuccess(data.message);
       } else {
-        toastService.updateError(toastId, data?.message || "خطایی از سمت سرور رخ داد");
+        ToastService.updateError(data.message);
       }
 
       return data;
     } catch (error: any) {
-      toastService.updateError(toastId, error?.message || "خطای شبکه رخ داده است");
+      ToastService.updateError(error.message);
+      return null;
+    }
+  }
+
+  async postChunk(payload?: object): Promise<any> {
+    try {
+      const isFormData = payload instanceof FormData;
+      const response = await fetch(BASE_URL + this.endpoint, {
+        method: METHOD_POST,
+        headers: {
+          ...this.getHeaders(),
+        },
+        body: isFormData ? payload : JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (response.status !== 200) {
+        ToastService.updateError(data.message);
+      }
+
+      return data;
+    } catch (error: any) {
+      ToastService.updateError(error.message);
+      return null;
+    }
+  }
+
+  async patch(payload?: object): Promise<any> {
+    try {
+      ToastService.showLoading();
+
+      const isFormData = payload instanceof FormData;
+
+      const response = await fetch(BASE_URL + this.endpoint, {
+        method: METHOD_PATCH,
+        headers: {
+          ...this.getHeaders(),
+          ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
+        },
+        body: isFormData ? payload : JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (response.status === 200) {
+        ToastService.updateSuccess(data.message);
+      } else {
+        ToastService.updateError(data.message);
+      }
+
+      return data;
+    } catch (error: any) {
+      ToastService.updateError(error.message);
+      return null;
+    }
+  }
+
+  async delete(payload?: object): Promise<any> {
+    try {
+      ToastService.showLoading();
+
+      const isFormData = payload instanceof FormData;
+
+      const response = await fetch(BASE_URL + this.endpoint, {
+        method: METHOD_DELETE,
+        headers: {
+          ...this.getHeaders(),
+          ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
+        },
+        body: isFormData ? payload : JSON.stringify(payload),
+      });
+
+      const data: ApiResponse = await response.json();
+
+      if (response.status === 200) {
+        ToastService.updateSuccess(data.message);
+      } else {
+        ToastService.updateError(data.message);
+      }
+
+      return data;
+    } catch (error: any) {
+      ToastService.updateError(error.message);
       return null;
     }
   }
 
   private getHeaders(): Record<string, string> {
-    const headers: Record<string, string> = {
+    return {
       Accept: APPLICATION_JSON,
+      Authorization: 'Bearer ' + this.cookies.get('token'),
     };
-
-    const token = this.cookies.get("token");
-    if (token) {
-      headers["Authorization"] = `Bearer ${token}`;
-    }
-
-    return headers;
   }
 }
 

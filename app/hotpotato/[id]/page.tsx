@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import { useParams } from "next/navigation";
 import SocketService from "@/app/services/SocketService";
 import { SoundService } from "@/app/services/AudioService";
+import { Socket } from "socket.io-client";
 
 interface Payload {
   sender: string;
@@ -22,13 +23,13 @@ const HotPotatoPage = () => {
   const [subCategoryTitle, setSubCategoryTitle] = useState<string>("");
   const [action, setAction] = useState<boolean>(false);
   const [isFinished, setIsFinished] = useState<boolean>(false);
-  const [trigger, setTrigger] = useState(0);
   const [timerDisplay, setTimerDisplay] = useState<string>("--:--");
   const [isMounted, setIsMounted] = useState<boolean>(false);
 
   const totalTimeRef = useRef<number>(0);
   const playerIdRef = useRef<string>("");
-  const socketRef = useRef<SocketService | null>(null);
+  
+  const socketRef = useRef<Socket | null>(null);
 
   useEffect(() => {
     setIsMounted(true);
@@ -39,8 +40,8 @@ const HotPotatoPage = () => {
     playerIdRef.current = storedId;
 
     const socketService = new SocketService();
-    socketRef.current = socketService;
     const socket = socketService.connect();
+    socketRef.current = socket;
 
     const roomId = params?.id as string;
 
@@ -85,7 +86,6 @@ const HotPotatoPage = () => {
           totalTimeRef.current = response.totalTimeSeconds;
         }
 
-        // 🎵 پخش ضربان صدا متناسب با زمان باقی‌مانده
         if (totalTimeRef.current > 0 && typeof response.timeLeftSeconds === "number") {
           SoundService.playTick(response.timeLeftSeconds, totalTimeRef.current);
         }
@@ -118,19 +118,23 @@ const HotPotatoPage = () => {
       socketService.disconnect();
       SoundService.stop();
     };
-  }, [trigger, params?.id]);
+  }, [params?.id]);
 
   const onClickHandler = () => {
     SoundService.init();
-    if (!socketRef.current) return;
-    const socket = socketRef.current.connect();
-    socket.emit("playerTurn", params?.id as string);
+    const socket = socketRef.current;
+    if (socket && socket.connected) {
+      socket.emit("playerTurn", params?.id as string);
+    }
   };
 
-  const startHandler = () => {
+  const refreshGameHandler = () => {
     SoundService.init();
-    setTrigger((prev) => prev + 1);
     setIsFinished(false);
+    const socket = socketRef.current;
+    if (socket && socket.connected) {
+      socket.emit("refreshGame", params?.id as string);
+    }
   };
 
   if (!isMounted) {
@@ -272,7 +276,7 @@ const HotPotatoPage = () => {
             <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto mb-6 rounded-full" />
 
             <button
-              onClick={startHandler}
+              onClick={refreshGameHandler}
               className="w-full py-3 bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-red-400 hover:text-red-300 font-extrabold text-sm uppercase tracking-widest rounded-xl border border-red-500/30 shadow-md active:scale-[0.98] transition-all duration-150 cursor-pointer"
             >
               شروع مجدد رقابت

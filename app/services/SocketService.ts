@@ -78,7 +78,6 @@ class SocketService {
 
   // مدیریت رویدادهای عمومی اتصال
   private setupGlobalListeners(): void {
-    const toastId = ToastService.showLoading();
 
     this.socket?.on('connect', () => {
       console.log(`[Socket] Connected to namespace: ${this.namespace || '/'}`);
@@ -86,7 +85,7 @@ class SocketService {
 
     this.socket?.on('connect_error', (error) => {
       console.error('[Socket] Connection Error:', error.message);
-      ToastService.updateError(toastId, 'مشکل در اتصال به سرور زنده');
+      ToastService.updateError('مشکل در اتصال به سرور زنده');
     });
 
     this.socket?.on('disconnect', (reason) => {

@@ -9,7 +9,7 @@ import Link from "next/link";
 
 interface RoomPlayer {
     id: string,
-    player_name: string,
+    name: string,
     activate: boolean
 }
 

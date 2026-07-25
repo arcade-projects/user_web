@@ -59,6 +59,11 @@ const RoomPlayerPage = () => {
                                 #{index + 1}
                                 </span>
                             </div>
+                            <div className="flex items-baseline justify-between mt-2">
+                                <span className="text-lg font-black tracking-wide text-slate-100">
+                                {roomPlayer.name}
+                                </span>
+                            </div>
                         </Link>
                         );
                     })

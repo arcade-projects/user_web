@@ -29,7 +29,7 @@ const HotPotatoJoinPage = () => {
             pincode: pincode
         }
 
-        const player = new RequestService('/room/player');
+        const player = new RequestService('/api/v1/room/player');
         const data = await player.post(payload);
 
         if (data) {

@@ -1,0 +1,76 @@
+"use client"
+
+import RequestService from "@/app/services/RequestService";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
+
+import { ArcadeNeonTheme as theme } from "@/app/theme/arcade-theme";
+import Link from "next/link";
+
+interface RoomPlayer {
+    id: string,
+    player_name: string,
+    activate: boolean
+}
+
+const RoomPlayerPage = () => {
+
+    const { pincode } = useParams();
+
+    const [roomPlayers, setRoomPlayers] = useState<RoomPlayer[]>([]);
+
+    useEffect(() => {
+
+        const getRooms = async () => {
+            const response = new RequestService(`/api/v1/room/${pincode}/player`);
+            const result = await response.get();
+
+            setRoomPlayers(result);
+        }
+
+        getRooms();
+
+    }, []);
+
+    return (
+        <div className={theme.canvas}>
+            <div className={theme.ambientLights.topRed} />
+            <div className={theme.ambientLights.bottomCyan} />
+
+            <div className="w-full max-w-4xl relative z-10">
+                <div className="text-center mb-8">
+                <h2 className={theme.header.title}>اتاق‌ها</h2>
+                <div className={theme.header.divider} />
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {roomPlayers && roomPlayers.length > 0 ? (
+                    roomPlayers.map((roomPlayer, index) => {
+                    const colorClass = theme.colors[index % theme.colors.length];
+
+                    return (
+                        <Link
+                            key={roomPlayer.id || index}
+                            href={`room/${pincode}/room_player`}
+                            className={`cursor-pointer ${theme.card.wrapper} ${colorClass}`}
+                            >
+                            <div className="flex items-center justify-between mb-4">
+                                <span className="text-xs font-mono text-slate-400">
+                                #{index + 1}
+                                </span>
+                            </div>
+                        </Link>
+                        );
+                    })
+                ) : (
+                    <div className="col-span-full text-center py-8 text-slate-500 text-sm">
+                    هیچ اتاقی یافت نشد.
+                    </div>
+                )}
+                </div>
+            </div>
+        </div>
+    );
+}
+
+export default RoomPlayerPage;

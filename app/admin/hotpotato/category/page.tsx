@@ -32,7 +32,7 @@ const AdminHotPotatoPage = () => {
     useEffect(() => {
 
         const getCategories = async () => {
-            const response = new RequestService('/category');
+            const response = new RequestService('/api/v1/category');
             const data = await response.get();
 
             setCategories(data);
@@ -43,7 +43,7 @@ const AdminHotPotatoPage = () => {
     }, []);
 
     const onDeleteCategoryHandler = async (id: string) => {
-        const response = new RequestService('/category/' + id);
+        const response = new RequestService('/api/v1/category/' + id);
         const data = await response.delete();
         setCategories(data);
     }
@@ -55,7 +55,7 @@ const AdminHotPotatoPage = () => {
             title: category
         }
 
-        const response = new RequestService('/category');
+        const response = new RequestService('/api/v1/category');
         const data = await response.post(payload);
         setCategories(data);
         setCategory('');

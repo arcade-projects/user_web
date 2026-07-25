@@ -1,171 +1,106 @@
 "use client"
 
 import { ArcadeNeonTheme as theme } from "@/app/theme/arcade-theme";
-import RequestService from "@/app/services/RequestService";
-import React, { useEffect, useState } from "react";
 
-interface Category {
-    id: string,
-    title: string,
-    sub_category: SubCategory[]
-}
+import RequestService from "@/app/services/RequestService";
+import { useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useParams } from "next/navigation";
+import { Trash2 } from "lucide-react";
 
 interface SubCategory {
     id: string,
     title: string,
+    category_id: string
 }
 
 const AdminHotPotatoPage = () => {
 
-    const [category, setCategory] = useState<string>('');
-    const [selectedCategoryId, setSelectedCategoryId] = useState<string>('');
-    const [subCategory, setSubCategory] = useState<string>('');
-    const [categories, setCategories] = useState<Category[]>();
+    const { id } = useParams();
+    
+    const colors = theme.colors;
+    
+    const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
 
-    const addCategoryHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setCategory(e.target.value);
-    }
-
-    const addSubCategoryHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setSubCategory(e.target.value);
-    }
+    const { register, handleSubmit, reset } = useForm<SubCategory>();
 
     useEffect(() => {
 
-        const getCategories = async () => {
-            const response = new RequestService('/category');
-            const data = await response.get();
+        const getSubCategories = async () => {
+            const response = new RequestService('/category/' + id + '/sub-category');
+            const result = await response.get();
 
-            setCategories(data);
+            setSubCategories(result);
         }
 
-        getCategories();
+        getSubCategories();
 
     }, []);
 
-    const onCategorySubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
 
-        const payload = {
-            title: category
-        }
-
-        const response = new RequestService('/category');
-        response.post(payload);
+    const onDeleteSubCategoryHandler = async (sub_category_id: string) => {
+        const response = new RequestService('/category/' + id + '/sub-category/' + sub_category_id);
+        const result = await response.delete();
+        setSubCategories(result);
     }
+ 
+    const onSubmitHandler = async (data: SubCategory) => {
 
-    const onSubCategorySubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
-        e.preventDefault();
+        const { title } = data;
 
         const payload = {
-            category_id: selectedCategoryId,
-            title: subCategory
+            title: title,
+            category_id: id
         }
 
-        const response = new RequestService('/sub-category');
-        response.post(payload);
+        const response = new RequestService(`/category/${id}/sub-category`);
+        const result = await response.post(payload);
+
+        setSubCategories(result);
+
+        reset();
     }
 
     return (
         <div className={theme.canvas}>
-            {/* نورهای محیطی نئونی پس‌زمینه */}
+            {/* نورهای پس‌زمینه */}
             <div className={theme.ambientLights.topRed} />
             <div className={theme.ambientLights.bottomCyan} />
 
-            {/* هدر بخش فرم‌ها (اختیاری - در صورت نیاز می‌توانید عنوان را تغییر دهید) */}
-            <div className="text-center mb-10 z-10">
-                <h2 className={theme.header.title}>Manage Categories</h2>
-                <div className={theme.header.divider}></div>
-                <p className={theme.header.subtitle}>Create and organize your categories and subcategories</p>
-            </div>
-
-            {/* کانتینر فرم‌ها */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 w-full max-w-4xl z-10">
-                
-                {/* فرم اول: دسته بندی اصلی */}
-                <div className={`${theme.card.wrapper} border-red-500/20 hover:border-red-500/40 shadow-lg shadow-red-950/20`}>
-                    <div className="w-full">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className={theme.card.icon}>📁</span>
-                            <div>
-                                <h3 className={theme.card.enTitle}>Main Category</h3>
-                                <p className={theme.card.faTitle}>دسته بندی اصلی</p>
-                            </div>
-                        </div>
-                        
-                        <p className={theme.card.description}>Add a new primary category to your system.</p>
-
-                        <form onSubmit={onCategorySubmitHandler} className="space-y-4">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Category Title</label>
-                                <input 
-                                    type="text" 
-                                    onChange={addCategoryHandler} 
-                                    placeholder="e.g. Technology"
-                                    className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-600 focus:outline-none focus:border-red-500/60 focus:ring-1 focus:ring-red-500/60 transition-all text-sm"
-                                />
-                            </div>
-
-                            <button 
-                                type="submit" 
-                                className="w-full mt-2 px-4 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-500 hover:to-orange-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-red-950/40 active:scale-[0.98]"
-                            >
-                                Submit Category
-                            </button>
-                        </form>
-                    </div>
+            <form onSubmit={handleSubmit(onSubmitHandler)} className={theme.form.wrapper}>
+                <div>
+                    <label className={theme.form.label}>Title</label>
+                    <input
+                        {...register('title')}
+                        placeholder="Enter title..."
+                        className={theme.form.input}
+                        autoComplete="off"
+                    />
                 </div>
 
-                {/* فرم دوم: زیر دسته بندی */}
-                <div className={`${theme.card.wrapper} border-cyan-500/20 hover:border-cyan-500/40 shadow-lg shadow-cyan-950/20`}>
-                    <div className="w-full">
-                        <div className="flex items-center gap-3 mb-4">
-                            <span className={theme.card.icon}>🌿</span>
-                            <div>
-                                <h3 className={theme.card.enTitle}>Sub Category</h3>
-                                <p className={theme.card.faTitle}>زیر دسته بندی</p>
-                            </div>
-                        </div>
-                        
-                        <p className={theme.card.description}>Create a subcategory and assign it to a parent.</p>
+                <button type="submit" className={theme.form.submitBtn}>
+                    Submit
+                </button>
+            </form>
 
-                        <form onSubmit={onSubCategorySubmitHandler} className="space-y-4">
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Subcategory Title</label>
-                                <input 
-                                    type="text" 
-                                    onChange={addSubCategoryHandler} 
-                                    placeholder="e.g. Smartphones"
-                                    className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all text-sm"
-                                />
-                            </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full p-4">
+                {subCategories && subCategories.map((subCategory, index) => (
+                    <div key={subCategory.id || index} className="relative group">
+                        <span
+                            className={`block p-4 border backdrop-blur-sm rounded-xl font-bold text-center transition-all duration-300 ${colors[index % colors.length]}`}
+                        >
+                            {subCategory.title}
+                        </span>
 
-                            <div className="flex flex-col gap-1.5">
-                                <label className="text-xs font-bold text-slate-400 uppercase tracking-wider">Parent Category</label>
-                                <select 
-                                    value={selectedCategoryId} 
-                                    onChange={(e) => setSelectedCategoryId(e.target.value)}
-                                    className="w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/60 transition-all text-sm appearance-none cursor-pointer"
-                                >
-                                    <option value="" disabled className="bg-slate-950 text-slate-500">Select a category...</option>
-                                    {categories && categories.map((category) => (
-                                        <option key={category.id} value={category.id} className="bg-slate-900 text-slate-100">
-                                            {category.title}
-                                        </option>
-                                    ))}
-                                </select>
-                            </div>
-
-                            <button 
-                                type="submit" 
-                                className="w-full mt-2 px-4 py-3 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 text-white font-bold text-sm rounded-xl transition-all shadow-lg shadow-cyan-950/40 active:scale-[0.98]"
-                            >
-                                Submit Subcategory
-                            </button>
-                        </form>
+                        <button
+                            onClick={() => onDeleteSubCategoryHandler(subCategory.id)}
+                            className="absolute cursor-pointer top-2 left-2 p-1.5 text-red-500 bg-white/80 dark:bg-gray-800/80 rounded-lg opacity-0 group-hover:opacity-100 transition-opacity duration-200 hover:bg-red-500 hover:text-white"
+                            title="حذف"
+                        >
+                            <Trash2 size={16} />
+                        </button>
                     </div>
-                </div>
-
+                ))}
             </div>
         </div>
     );

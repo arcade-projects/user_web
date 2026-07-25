@@ -27,7 +27,7 @@ const HotPotatoJoinPage = () => {
     useEffect(() => {
 
         const getRoomHandler = async () => {
-            const response = new RequestService('/room/pincode/' + params?.pincode as string);
+            const response = new RequestService('/api/v1/room/pincode/' + params?.pincode as string);
             const data = await response.get();
 
             setRoom(data);
@@ -50,12 +50,12 @@ const HotPotatoJoinPage = () => {
             pincode: params?.pincode as string
         }
 
-        const player = new RequestService('/room/player');
-        const data = await player.post(payload);
+        const player = new RequestService(`/api/v1/room/${room.id}/player`);
+        const result = await player.post(payload);
 
-        if (data) {
-            localStorage.setItem('player_id', data.id);
-            localStorage.setItem('player_name', data.player_name);
+        if (result) {
+            localStorage.setItem('player_id', result.id);
+            localStorage.setItem('player_name', result.player_name);
             router.push('/hotpotato/' + room.id);
         }
     }

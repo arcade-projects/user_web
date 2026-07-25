@@ -16,7 +16,7 @@ const HotPotatoCreatePage = () => {
     useEffect(() => {
 
         const getCategories = async () => {
-            const response = new RequestService('/category');
+            const response = new RequestService('/api/v1/category');
             const data = await response.get();
 
             setCategories(data);
@@ -43,7 +43,7 @@ const HotPotatoCreatePage = () => {
             minutes: minutes
         };
 
-        const response = new RequestService('/room');
+        const response = new RequestService('/api/v1/room');
         const data = await response.post(payload);
         setRoom(data);
     }
@@ -77,7 +77,7 @@ const HotPotatoCreatePage = () => {
 
                             {/* اصلاح کانتینر QR: حذف محدودیت عرض سخت‌افزاری و باز گذاشتن فضا برای کامپوننت داخلی */}
                             <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 w-full backdrop-blur-sm">
-                                <QRCodeComponent text={`${process.env.NEXT_PUBLIC_APP_URL}/hotpotato/join/${room.pincode.toString()}`} />
+                                <QRCodeComponent text={`${process.env.NEXT_PUBLIC_APP_URL}/hotpotato/join/${room.pincode}`} />
                             </div>
                         </div>
                         

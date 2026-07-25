@@ -27,7 +27,7 @@ const AdminHotPotatoPage = () => {
     useEffect(() => {
 
         const getSubCategories = async () => {
-            const response = new RequestService('/category/' + id + '/sub-category');
+            const response = new RequestService('/api/v1/category/' + id + '/sub-category');
             const result = await response.get();
 
             setSubCategories(result);
@@ -39,7 +39,7 @@ const AdminHotPotatoPage = () => {
 
 
     const onDeleteSubCategoryHandler = async (sub_category_id: string) => {
-        const response = new RequestService('/category/' + id + '/sub-category/' + sub_category_id);
+        const response = new RequestService('/api/v1/category/' + id + '/sub-category/' + sub_category_id);
         const result = await response.delete();
         setSubCategories(result);
     }
@@ -53,7 +53,7 @@ const AdminHotPotatoPage = () => {
             category_id: id
         }
 
-        const response = new RequestService(`/category/${id}/sub-category`);
+        const response = new RequestService(`/api/v1/category/${id}/sub-category`);
         const result = await response.post(payload);
 
         setSubCategories(result);

@@ -1,6 +1,7 @@
 "use client"
 
 import { ArcadeNeonTheme as theme } from "@/app/theme/arcade-theme";
+
 import RequestService from "@/app/services/RequestService";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
@@ -22,7 +23,7 @@ const AdminHotPotatoPage = () => {
     const colors = theme.colors;
 
     const [category, setCategory] = useState<string>('');
-    const [categories, setCategories] = useState<Category[]>();
+    const [categories, setCategories] = useState<Category[]>([]);
 
     const onChangeCategoryHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCategory(e.target.value);
@@ -71,6 +72,7 @@ const AdminHotPotatoPage = () => {
                         Create New Category
                     </label>
                     <input 
+                        value={category}
                         type="text" 
                         name="category" 
                         placeholder="Enter category title..."

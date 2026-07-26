@@ -5,11 +5,14 @@ import RequestService from "@/app/services/RequestService";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import QRCodeComponent from "@/app/components/QRCodeComponent";
+import { CategoryInterface } from "@/app/interfaces/ICategory"
 
 const HotPotatoCreatePage = () => {
 
-    const [categories, setCategories] = useState([]);
-    const [categoryId, setCategoryId] = useState(String);
+    const colors = theme.colors;
+
+    const [categories, setCategories] = useState<CategoryInterface[]>([]);
+    const [selectedCategoryIds, setSelectedCategoryIds] = useState<string[]>([]);
     const [minutes, setMinutes] = useState(Number);
     const [room, setRoom] = useState<{id: String, pincode: number}>({ id: '', pincode: 0 });
 
@@ -17,21 +20,25 @@ const HotPotatoCreatePage = () => {
 
         const getCategories = async () => {
             const response = new RequestService('/api/v1/category');
-            const data = await response.get();
+            const result = await response.get();
 
-            setCategories(data);
+            setCategories(result);
         }
 
         getCategories();
 
     }, []);
 
-    const onChangeCategoryHandler = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        setCategoryId(e.target.value);
-    }
-    
     const onChangeTimerHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setMinutes(Number(e.target.value));
+    }
+
+    const handleCategoryToggle = (id: string) => {
+        setSelectedCategoryIds((prev) =>
+            prev.includes(id)
+                ? prev.filter((item) => item !== id)
+                : [...prev, id]
+        );
     }
 
     const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
@@ -39,26 +46,22 @@ const HotPotatoCreatePage = () => {
         e.preventDefault();
 
         const payload = {
-            category_id: categoryId,
+            category_id: selectedCategoryIds[0],
             minutes: minutes
         };
 
         const response = new RequestService('/api/v1/room');
-        const data = await response.post(payload);
-        setRoom(data);
+        const result = await response.post(payload);
+        setRoom(result);
     }
 
     return (
         <div className={`${theme.canvas} justify-center py-10 px-4`}>
-            {/* انوار محیطی نئونی */}
             <div className={theme.ambientLights.topRed} />
-            {/* اضافه کردن نور محیطی دوم برای بالانس رنگی چپ و راست */}
             <div className={theme.ambientLights.bottomCyan} />
 
-            {/* کانتینر اصلی ریسپانسیو: در دسکتاپ کنار هم، در موبایل زیر هم */}
             <div className="flex flex-col lg:flex-row items-stretch justify-center gap-6 w-full max-w-5xl z-10">
                 
-                {/* کارت دسترسی به روم و QR Code (فقط در صورت وجود پین‌کد نمایش داده می‌شود) */}
                 {room.pincode !== 0 && (
                     <div className={`${theme.card.wrapper} w-full max-w-md bg-slate-900/80 border-cyan-500/20 shadow-[0_0_35px_rgba(6,182,212,0.15)] p-5 md:p-6 text-center relative overflow-hidden flex flex-col justify-between mx-auto`}>
                         <div className="absolute top-0 left-0 w-full h-[2px] bg-gradient-to-r from-transparent via-cyan-500 to-transparent" />
@@ -75,7 +78,6 @@ const HotPotatoCreatePage = () => {
                                 </span>
                             </div>
 
-                            {/* اصلاح کانتینر QR: حذف محدودیت عرض سخت‌افزاری و باز گذاشتن فضا برای کامپوننت داخلی */}
                             <div className="bg-slate-950/50 p-3 rounded-2xl border border-slate-800/60 w-full backdrop-blur-sm">
                                 <QRCodeComponent text={`${process.env.NEXT_PUBLIC_APP_URL}/hotpotato/join/${room.pincode}`} />
                             </div>
@@ -87,7 +89,6 @@ const HotPotatoCreatePage = () => {
                     </div>
                 )}
 
-                {/* کارت تنظیمات و ساخت روم جدید */}
                 <div className={`${theme.card.wrapper} w-full max-w-md bg-slate-900/80 border-slate-800/80 shadow-2xl relative p-6 md:p-8 mx-auto flex flex-col justify-between`}>
                     <div>
                         <div className="text-center mb-6">
@@ -102,31 +103,42 @@ const HotPotatoCreatePage = () => {
 
                         <form onSubmit={onSubmitHandler} className="space-y-5">
                             <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-slate-400 block px-1">
-                                    Select Category
-                                </label>
-                                <div className="relative">
-                                    <select
-                                        value={categoryId}
-                                        onChange={onChangeCategoryHandler}
-                                        className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/30 transition-all appearance-none cursor-pointer pr-10"
-                                        style={{ 
-                                            backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%2364748b\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")', 
-                                            backgroundRepeat: 'no-repeat', 
-                                            backgroundPosition: 'right 1rem center', 
-                                            backgroundSize: '1em' 
-                                        }}
-                                    >
-                                        {categories && categories.map((category: {id: string, title: string}) => (
-                                            <option
-                                                key={category.id}
-                                                value={category.id}
-                                                className="bg-slate-950 text-slate-200"
+                                <div className="flex justify-between items-center px-1">
+                                    <label className="text-xs font-bold text-slate-400 block">
+                                        Select Categories
+                                    </label>
+                                    <span className="text-[11px] text-slate-500 font-medium">
+                                        {selectedCategoryIds.length} selected
+                                    </span>
+                                </div>
+
+                                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 w-full p-1">
+                                    {Array.isArray(categories) && categories.map((category, index) => {
+                                        const isSelected = selectedCategoryIds.includes(category.id);
+
+                                        return (
+                                            <button
+                                                key={category.id || index}
+                                                type="button" // حتماً type="button" باشه تا فرم رو submit نکنه
+                                                onClick={() => handleCategoryToggle(category.id)}
+                                                className={`relative p-4 rounded-xl font-bold text-center transition-all duration-200 cursor-pointer border select-none ${
+                                                    isSelected
+                                                        ? 'bg-orange-500/10 border-orange-500 text-orange-400 shadow-lg shadow-orange-500/10 scale-[1.02]'
+                                                        : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
+                                                }`}
                                             >
                                                 {category.title}
-                                            </option>
-                                        ))}
-                                    </select>
+
+                                                {/* آیکون تیک برای حالت انتخاب شده */}
+                                                {isSelected && (
+                                                    <span className="absolute top-2 right-2 flex h-2 w-2">
+                                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
+                                                        <span className="relative inline-flex rounded-full h-2 w-2 bg-orange-500"></span>
+                                                    </span>
+                                                )}
+                                            </button>
+                                        );
+                                    })}
                                 </div>
                             </div>
 
@@ -146,7 +158,7 @@ const HotPotatoCreatePage = () => {
 
                             <button 
                                 type="submit"
-                                disabled={room.pincode !== 0}
+                                disabled={room.pincode !== 0 || selectedCategoryIds.length === 0} // اگه هیچ دسته‌ای انتخاب نشده باشه هم می‌تونی غیرفعالش کنی
                                 className="disabled:from-slate-900 disabled:to-slate-900 disabled:border-slate-800/40 
                                     disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-40
                                     w-full mt-4 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-extrabold uppercase tracking-wider rounded-xl border border-slate-600/50 active:scale-[0.99] transition-all duration-150 shadow-md text-center text-sm cursor-pointer"

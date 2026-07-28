@@ -7,27 +7,25 @@ import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useParams } from "next/navigation";
 import { Trash2 } from "lucide-react";
-
-interface SubCategory {
-    id: string,
-    title: string,
-    category_id: string
-}
+import { SubCategoryInterface } from "@/app/interfaces/ICategory";
+import Cookies from "universal-cookie";
 
 const AdminHotPotatoPage = () => {
+
+    const cookies = new Cookies(null, { path: '/' });
 
     const { id } = useParams();
     
     const colors = theme.colors;
     
-    const [subCategories, setSubCategories] = useState<SubCategory[]>([]);
+    const [subCategories, setSubCategories] = useState<SubCategoryInterface[]>([]);
 
-    const { register, handleSubmit, reset } = useForm<SubCategory>();
+    const { register, handleSubmit, reset } = useForm<SubCategoryInterface>();
 
     useEffect(() => {
 
         const getSubCategories = async () => {
-            const response = new RequestService('/api/v1/category/' + id + '/sub-category');
+            const response = new RequestService('/api/v1/categories/' + id + '/sub-categories');
             const result = await response.get();
 
             setSubCategories(result);
@@ -39,21 +37,26 @@ const AdminHotPotatoPage = () => {
 
 
     const onDeleteSubCategoryHandler = async (sub_category_id: string) => {
-        const response = new RequestService('/api/v1/category/' + id + '/sub-category/' + sub_category_id);
+        const response = new RequestService('/api/v1/categories/' + id + '/sub-categories/' + sub_category_id);
         const result = await response.delete();
         setSubCategories(result);
     }
  
-    const onSubmitHandler = async (data: SubCategory) => {
+    const onSubmitHandler = async (data: SubCategoryInterface) => {
 
-        const { title } = data;
+        const { name } = data;
 
         const payload = {
-            title: title,
-            category_id: id
+            category_id: id,
+            translations: [
+                {
+                    locale: cookies.get('lang') || 'en',
+                    name: name
+                }
+            ]
         }
 
-        const response = new RequestService(`/api/v1/category/${id}/sub-category`);
+        const response = new RequestService(`/api/v1/categories/${id}/sub-categories`);
         const result = await response.post(payload);
 
         setSubCategories(result);
@@ -63,7 +66,6 @@ const AdminHotPotatoPage = () => {
 
     return (
         <div className={theme.canvas}>
-            {/* نورهای پس‌زمینه */}
             <div className={theme.ambientLights.topRed} />
             <div className={theme.ambientLights.bottomCyan} />
 
@@ -71,7 +73,7 @@ const AdminHotPotatoPage = () => {
                 <div>
                     <label className={theme.form.label}>Title</label>
                     <input
-                        {...register('title')}
+                        {...register('name')}
                         placeholder="Enter title..."
                         className={theme.form.input}
                         autoComplete="off"
@@ -83,13 +85,13 @@ const AdminHotPotatoPage = () => {
                 </button>
             </form>
 
-                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full p-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 w-full p-4">
                 {subCategories && subCategories.map((subCategory, index) => (
                     <div key={subCategory.id || index} className="relative group">
                         <span
                             className={`block p-4 border backdrop-blur-sm rounded-xl font-bold text-center transition-all duration-300 ${colors[index % colors.length]}`}
                         >
-                            {subCategory.title}
+                            {subCategory.name}
                         </span>
 
                         <button

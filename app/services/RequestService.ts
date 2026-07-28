@@ -154,6 +154,7 @@ class RequestService {
     return {
       Accept: APPLICATION_JSON,
       Authorization: 'Bearer ' + this.cookies.get('token'),
+      'Accept-Language': this.cookies.get('lang') || 'en'
     };
   }
 }

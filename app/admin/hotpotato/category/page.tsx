@@ -6,12 +6,8 @@ import RequestService from "@/app/services/RequestService";
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { Trash2 } from "lucide-react";
-
-interface Category {
-    id: string,
-    title: string,
-    sub_category: SubCategory[]
-}
+import { CategoryInterface } from "@/app/interfaces/ICategory";
+import Cookies from "universal-cookie";
 
 interface SubCategory {
     id: string,
@@ -20,10 +16,12 @@ interface SubCategory {
 
 const AdminHotPotatoPage = () => {
 
+    const cookies = new Cookies(null, { path: '/' });
+
     const colors = theme.colors;
 
     const [category, setCategory] = useState<string>('');
-    const [categories, setCategories] = useState<Category[]>([]);
+    const [categories, setCategories] = useState<CategoryInterface[]>([]);
 
     const onChangeCategoryHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
         setCategory(e.target.value);
@@ -32,7 +30,7 @@ const AdminHotPotatoPage = () => {
     useEffect(() => {
 
         const getCategories = async () => {
-            const response = new RequestService('/api/v1/category');
+            const response = new RequestService('/api/v1/categories');
             const data = await response.get();
 
             setCategories(data);
@@ -43,7 +41,7 @@ const AdminHotPotatoPage = () => {
     }, []);
 
     const onDeleteCategoryHandler = async (id: string) => {
-        const response = new RequestService('/api/v1/category/' + id);
+        const response = new RequestService('/api/v1/categories/' + id);
         const data = await response.delete();
         setCategories(data);
     }
@@ -52,10 +50,15 @@ const AdminHotPotatoPage = () => {
         e.preventDefault();
 
         const payload = {
-            title: category
+            categories: [
+                {
+                    'locale': cookies.get('lang') || 'en', 
+                    'name': category
+                }
+            ]
         }
 
-        const response = new RequestService('/api/v1/category');
+        const response = new RequestService('/api/v1/categories');
         const data = await response.post(payload);
         setCategories(data);
         setCategory('');
@@ -94,7 +97,7 @@ const AdminHotPotatoPage = () => {
                             href={`/admin/hotpotato/category/${category.id}/sub_category`}
                             className={`block p-4 border backdrop-blur-sm rounded-xl font-bold text-center transition-all duration-300 ${colors[index % colors.length]}`}
                         >
-                            {category.title}
+                            {category.name}
                         </Link>
 
                         <button

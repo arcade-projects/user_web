@@ -19,7 +19,7 @@ const HotPotatoCreatePage = () => {
     useEffect(() => {
 
         const getCategories = async () => {
-            const response = new RequestService('/api/v1/category');
+            const response = new RequestService('/api/v1/categories');
             const result = await response.get();
 
             setCategories(result);
@@ -119,7 +119,7 @@ const HotPotatoCreatePage = () => {
                                         return (
                                             <button
                                                 key={category.id || index}
-                                                type="button" // حتماً type="button" باشه تا فرم رو submit نکنه
+                                                type="button"
                                                 onClick={() => handleCategoryToggle(category.id)}
                                                 className={`relative p-4 rounded-xl font-bold text-center transition-all duration-200 cursor-pointer border select-none ${
                                                     isSelected
@@ -127,9 +127,8 @@ const HotPotatoCreatePage = () => {
                                                         : 'bg-slate-900/60 border-slate-800 text-slate-300 hover:border-slate-700 hover:bg-slate-900'
                                                 }`}
                                             >
-                                                {category.title}
+                                                {category.name}
 
-                                                {/* آیکون تیک برای حالت انتخاب شده */}
                                                 {isSelected && (
                                                     <span className="absolute top-2 right-2 flex h-2 w-2">
                                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-orange-400 opacity-75"></span>
@@ -158,7 +157,7 @@ const HotPotatoCreatePage = () => {
 
                             <button 
                                 type="submit"
-                                disabled={room.pincode !== 0 || selectedCategoryIds.length === 0} // اگه هیچ دسته‌ای انتخاب نشده باشه هم می‌تونی غیرفعالش کنی
+                                disabled={room.pincode !== 0 || selectedCategoryIds.length === 0}
                                 className="disabled:from-slate-900 disabled:to-slate-900 disabled:border-slate-800/40 
                                     disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-40
                                     w-full mt-4 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-extrabold uppercase tracking-wider rounded-xl border border-slate-600/50 active:scale-[0.99] transition-all duration-150 shadow-md text-center text-sm cursor-pointer"

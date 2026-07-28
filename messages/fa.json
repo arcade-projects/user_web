@@ -1,0 +1,49 @@
+{
+  "HomePage": {
+    "title": "به خوش‌آمدید Arcade",
+    "createRoom": "ایجاد اتاق جدید",
+    "joinRoom": "ورود با پین‌کد"
+  },
+  "Common": {
+    "loading": "در حال بارگذاری..."
+  },
+  "HotPotatoPage": {
+    "title": "ARCADE! 👾",
+    "subtitle": "یا یه بازی جدید بساز، یا بپر وسط بازی بقیه! 🏃💨",
+    "joinGame": "💥 ورود به بازی 💥",
+    "createRoom": "🛠️ ساخت اتاق",
+    "warning": "هشدار: این بازی ممکن است باعث خنده‌های شدید شود. 🛑"
+  },
+  "MainPage": {
+    "header": {
+      "title": "ARCADE ZONE",
+      "subtitle": "مجموعه بازی‌های دورهمی، مدرن و تحت وب. بازی مورد نظر خود را انتخاب کنید و در کنار دوستانتان لذت ببرید."
+    },
+    "games": {
+      "hotPotato": {
+        "title": "HOT POTATO",
+        "localTitle": "بمب ساعتی کلمات",
+        "description": "یک بازی گروهی و هیجان‌انگیز! کلمه را حدس بزن و بمب را قبل از انفجار به نفر بعدی پاس بده."
+      },
+      "mafia": {
+        "title": "MAFIA HELPER",
+        "localTitle": "گرداننده مافیا",
+        "description": "مدیریت حرفه‌ای نقش‌ها، شب‌ها و روزهای بازی مافیا بدون نیاز به قلم و کاغذ."
+      },
+      "spy": {
+        "title": "SPYFALL",
+        "localTitle": "جاسوس بازی",
+        "description": "مکان مشترک را پیدا کنید و با سوال و جواب‌های هوشمندانه، جاسوس گروه را لو بدهید!"
+      }
+    },
+    "badges": {
+      "live": "در حال اجرا",
+      "soon": "بزودی"
+    },
+    "actions": {
+      "enterRoom": "ورود به بازی",
+      "underDev": "در حال توسعه"
+    },
+    "footer": "© 2026 Arcade Web Platform. All Rights Reserved."
+  }
+}

@@ -1,11 +1,12 @@
 // app/page.tsx
 import Link from "next/link";
 import { ArcadeNeonTheme } from "@/app/theme/arcade-theme";
+import { useTranslations } from "next-intl";
 
 export interface GameCard {
   id: string;
   title: string;
-  persianTitle: string;
+  localTitle: string;
   description: string;
   route: string;
   icon: string;
@@ -14,14 +15,17 @@ export interface GameCard {
   shadowColor: string;
 }
 
-export default function MainDashboard() {
+export default function MainPage() {
+
+  const t = useTranslations("MainPage");
+
   const GAMES_LIST: GameCard[] = [
-    {
+{
       id: "hot-potato",
-      title: "HOT POTATO",
-      persianTitle: "بمب ساعتی کلمات",
-      description: "یک بازی گروهی و هیجان‌انگیز! کلمه را حدس بزن و بمب را قبل از انفجار به نفر بعدی پاس بده.",
-      route: "/hotpotato", // مسیر ثابت برای جلوگیری از رندرهای ناخواسته nanoid
+      title: t("games.hotPotato.title"),
+      localTitle: t("games.hotPotato.localTitle"),
+      description: t("games.hotPotato.description"),
+      route: "/hotpotato",
       icon: "💣",
       status: "active",
       badgeColor: "bg-red-500 text-white",
@@ -29,9 +33,9 @@ export default function MainDashboard() {
     },
     {
       id: "mafia",
-      title: "MAFIA HELPER",
-      persianTitle: "گرداننده مافیا",
-      description: "مدیریت حرفه‌ای نقش‌ها، شب‌ها و روزهای بازی مافیا بدون نیاز به قلم و کاغذ.",
+      title: t("games.mafia.title"),
+      localTitle: t("games.mafia.localTitle"),
+      description: t("games.mafia.description"),
       route: "/games/mafia",
       icon: "🕵️‍♂️",
       status: "coming_soon",
@@ -40,9 +44,9 @@ export default function MainDashboard() {
     },
     {
       id: "spy",
-      title: "SPYFALL",
-      persianTitle: "جاسوس بازی",
-      description: "مکان مشترک را پیدا کنید و با سوال و جواب‌های هوشمندانه، جاسوس گروه را لو بدهید!",
+      title: t("games.spy.title"),
+      localTitle: t("games.spy.localTitle"),
+      description: t("games.spy.description"),
       route: "/games/spy",
       icon: "🔍",
       status: "coming_soon",
@@ -52,30 +56,25 @@ export default function MainDashboard() {
   ];
 
   return (
-    // 1. استفاده از استایل پس‌زمینه اصلی
     <div className={ArcadeNeonTheme.canvas}>
       
-      {/* 2. هاله‌های نوری بک‌گراند */}
       <div className={ArcadeNeonTheme.ambientLights.topRed} />
       <div className={ArcadeNeonTheme.ambientLights.bottomCyan} />
 
-      {/* 3. هدر اصلی وب‌سایت با استایل‌های تم */}
       <header className="text-center my-12 z-10 max-w-xl">
         <h1 className={ArcadeNeonTheme.header.title}>
           ARCADE ZONE
         </h1>
         <div className={ArcadeNeonTheme.header.divider} />
         <p className={ArcadeNeonTheme.header.subtitle}>
-          مجموعه بازی‌های دورهمی، مدرن و تحت وب. بازی مورد نظر خود را انتخاب کنید و در کنار دوستانتان لذت ببرید.
+          {t('header.subtitle')}
         </p>
       </header>
 
-      {/* گرید کارت‌های بازی */}
       <main className="w-full max-w-5xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 my-4 z-10">
         {GAMES_LIST.map((game: GameCard) => {
           const isActive = game.status === "active";
 
-          // ساختار کارت بازی با متغیرهای تم
           const CardContent = (
             <div className={`
               ${ArcadeNeonTheme.card.wrapper} 
@@ -97,7 +96,7 @@ export default function MainDashboard() {
                     {game.title}
                   </h2>
                   <h3 className={ArcadeNeonTheme.card.faTitle} dir="rtl">
-                    {game.persianTitle}
+                    {game.localTitle}
                   </h3>
                 </div>
 

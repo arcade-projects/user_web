@@ -7,9 +7,9 @@ import { ArcadeNeonTheme } from '@/app/theme/arcade-theme';
 import { FaGithub, FaLinkedin } from 'react-icons/fa';
 
 const LANGUAGES = [
-  { code: 'fa', label: 'فارسی', flag: '🇮🇷' },
   { code: 'en', label: 'English', flag: '🇬🇧' },
   { code: 'fi', label: 'Suomi', flag: '🇫🇮' },
+  { code: 'fa', label: 'فارسی', flag: '🇮🇷' },
 ];
 
 export default function BottomNav() {
@@ -21,7 +21,7 @@ export default function BottomNav() {
   const cookies = new Cookies(null, { path: '/' });
 
   useEffect(() => {
-    const savedLang = cookies.get('lang') || 'fa';
+    const savedLang = cookies.get('lang') || 'en';
     setCurrentLang(savedLang);
 
     const handleClickOutside = (event: MouseEvent) => {
@@ -50,7 +50,6 @@ export default function BottomNav() {
     >
       <div className="max-w-7xl mx-auto flex items-center justify-between relative">
         
-        {/* ─── سمت چپ: اطلاعات Mahan Kabir و لینک‌ها ─── */}
         <div className="flex items-center gap-3">
           <div className="text-xs font-medium text-slate-400 flex items-center gap-1.5">
             <span>Made with</span>
@@ -63,10 +62,9 @@ export default function BottomNav() {
 
           <div className="h-3.5 w-[1px] bg-slate-800 hidden sm:block" />
 
-          {/* آیکون‌های گیت‌هاپ و لینکدین */}
           <div className="flex items-center gap-1.5">
             <a
-              href="https://github.com/mahankabir" // آدرس گیت‌هاپ خودت رو بگذار
+              href="https://github.com/mahankabir"
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 rounded-lg bg-slate-900/60 border border-slate-800/80 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all duration-200"
@@ -76,7 +74,7 @@ export default function BottomNav() {
             </a>
 
             <a
-              href="https://linkedin.com/in/mahankabir" // آدرس لینکدین خودت رو بگذار
+              href="https://linkedin.com/in/mahankabir"
               target="_blank"
               rel="noopener noreferrer"
               className="p-1.5 rounded-lg bg-slate-900/60 border border-slate-800/80 text-slate-400 hover:text-cyan-400 hover:border-cyan-500/40 hover:bg-cyan-500/10 transition-all duration-200"
@@ -87,10 +85,8 @@ export default function BottomNav() {
           </div>
         </div>
 
-        {/* ─── سمت راست: دکمه تنظیمات و کرکره زبان ─── */}
         <div className="relative">
           
-          {/* ─── کرکره بازشونده بالا ─── */}
           {isOpen && (
             <div className="absolute bottom-12 right-0 w-60 bg-slate-900/95 backdrop-blur-2xl border border-slate-800 rounded-2xl shadow-[0_0_30px_rgba(0,0,0,0.9)] p-3 space-y-2 transition-all duration-300 animate-in fade-in slide-in-from-bottom-3 z-50">
               
@@ -107,7 +103,8 @@ export default function BottomNav() {
                     <div className="flex items-center gap-2.5">
                       <Globe className="w-4 h-4 text-cyan-400 group-hover:scale-110 transition-transform" />
                       <span className="text-xs font-bold text-slate-200 group-hover:text-white">
-                        زبان / Language
+                        {/* زبان / Language */}
+                        Language
                       </span>
                     </div>
                     <div className="flex items-center gap-1.5">
@@ -156,7 +153,6 @@ export default function BottomNav() {
             </div>
           )}
 
-          {/* دکمه اصلی چرخ‌دنده */}
           <button
             onClick={() => {
               setIsOpen(!isOpen);

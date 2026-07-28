@@ -1,0 +1,49 @@
+{
+  "HomePage": {
+    "title": "Welcome to Arcade",
+    "createRoom": "Create New Room",
+    "joinRoom": "Join with PIN Code"
+  },
+  "Common": {
+    "loading": "Loading..."
+  },
+  "HotPotatoPage": {
+    "title": "ARCADE! 👾",
+    "subtitle": "Create a new game, or jump right into the action! 🏃💨",
+    "joinGame": "💥 JOIN GAME 💥",
+    "createRoom": "🛠️ Create Room",
+    "warning": "Warning: This game may cause intense laughter. 🛑"
+  },
+  "MainPage": {
+    "header": {
+      "title": "ARCADE ZONE",
+      "subtitle": "A collection of modern, web-based party games. Choose your game and enjoy playing with friends."
+    },
+    "games": {
+      "hotPotato": {
+        "title": "HOT POTATO",
+        "localTitle": "Word Time Bomb",
+        "description": "An exciting group game! Guess the word and pass the bomb to the next player before it explodes."
+      },
+      "mafia": {
+        "title": "MAFIA HELPER",
+        "localTitle": "Mafia Moderator",
+        "description": "Professional management of roles, nights, and days in Mafia without paper and pen."
+      },
+      "spy": {
+        "title": "SPYFALL",
+        "localTitle": "Spyfall Game",
+        "description": "Find the shared location and uncover the spy through clever questions and answers!"
+      }
+    },
+    "badges": {
+      "live": "LIVE NOW",
+      "soon": "SOON"
+    },
+    "actions": {
+      "enterRoom": "Enter Room",
+      "underDev": "Under Development"
+    },
+    "footer": "© 2026 Arcade Web Platform. All Rights Reserved."
+  }
+}

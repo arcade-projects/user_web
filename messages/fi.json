@@ -1,0 +1,49 @@
+{
+  "HomePage": {
+    "title": "Tervetuloa Arcadeen",
+    "createRoom": "Luo uusi huone",
+    "joinRoom": "Liity PIN-koodilla"
+  },
+  "Common": {
+    "loading": "Ladataan..."
+  },
+  "HotPotatoPage": {
+    "title": "ARCADE! 👾",
+    "subtitle": "Luo uusi peli tai hyppää muiden peliin! 🏃💨",
+    "joinGame": "💥 LIITY PELIIN 💥",
+    "createRoom": "🛠️ Luo huone",
+    "warning": "Varoitus: Tämä peli saattaa aiheuttaa hallitsematonta naurua. 🛑"
+  },
+  "MainPage": {
+    "header": {
+      "title": "ARCADE ZONE",
+      "subtitle": "Valikoima moderneja verkossa pelattavia seurapelejä. Valitse peli ja nauti ystäviesi kanssa."
+    },
+    "games": {
+      "hotPotato": {
+        "title": "HOT POTATO",
+        "localTitle": "Sanaaika-pommi",
+        "description": "Jännittävä ryhmäpeli! Arvaa sana ja syötä pommi seuraavalle ennen kuin se räjähtää."
+      },
+      "mafia": {
+        "title": "MAFIA HELPER",
+        "localTitle": "Mafia-juontaja",
+        "description": "Ammattimainen roolien, öiden ja päivien hallinta ilman kynää ja paperia."
+      },
+      "spy": {
+        "title": "SPYFALL",
+        "localTitle": "Vakoojapeli",
+        "description": "Löydä yhteinen sijainti ja paljasta ryhmän vakooja älykkäillä kysymyksillä!"
+      }
+    },
+    "badges": {
+      "live": "KÄYNNISSÄ",
+      "soon": "TULOSSA"
+    },
+    "actions": {
+      "enterRoom": "Astu huoneeseen",
+      "underDev": "Kehitteillä"
+    },
+    "footer": "© 2026 Arcade Web Platform. Kaikki oikeudet pidätetään."
+  }
+}

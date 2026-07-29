@@ -1,5 +1,5 @@
 export const ArcadeNeonTheme = {
-  canvas: "flex flex-col items-center min-h-screen bg-slate-950 text-slate-100 p-6 font-sans select-none overflow-x-hidden relative",
+  canvas: "flex flex-col items-center min-h-screen bg-slate-950 text-slate-100 p-6 font-sans select-none overflow-x-hidden",
   
   ambientLights: {
     topRed: "absolute top-[-10%] left-[-10%] w-[50%] aspect-square bg-red-900/10 rounded-full blur-[120px] pointer-events-none",
@@ -40,5 +40,33 @@ export const ArcadeNeonTheme = {
     label: "text-xs font-bold uppercase tracking-widest text-slate-400 mb-1 block",
     input: "w-full px-4 py-3 bg-slate-950/60 border border-slate-800 rounded-xl text-slate-100 placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-2 focus:ring-cyan-500/10 transition-all duration-300 text-sm tracking-wide",
     submitBtn: "w-full py-3 px-6 bg-gradient-to-r from-red-500 to-orange-500 hover:from-red-600 hover:to-orange-600 text-white font-black uppercase tracking-wider text-xs rounded-xl shadow-[0_0_20px_rgba(239,68,68,0.2)] hover:shadow-[0_0_25px_rgba(239,68,68,0.4)] active:scale-[0.98] transition-all duration-200 cursor-pointer"
+  },
+  sidebar: {
+    mobileToggle: "lg:hidden fixed top-4 left-4 z-50 p-2 rounded-lg bg-slate-900 border border-slate-800 text-slate-300 hover:text-white shadow-md active:scale-95 transition-transform",
+    backdrop: "fixed inset-0 bg-slate-950/80 z-40 lg:hidden",
+    
+    // Performance optimized: plain border and background, no heavy blur filters
+    container: "fixed top-0 bottom-0 left-0 z-40 w-64 bg-slate-900 border-r border-slate-800 p-4 flex flex-col justify-between transition-transform duration-200 ease-out lg:translate-x-0 shadow-xl",
+    
+    brandWrapper: "flex items-center gap-3 pb-5 border-b border-slate-800/80 px-2",
+    brandIcon: "w-8 h-8 rounded-lg bg-gradient-to-tr from-red-500 to-orange-500 flex items-center justify-center text-white font-black text-base shadow-sm",
+    brandTitle: "text-base font-black tracking-wider text-slate-100",
+    brandSubtitle: "text-[10px] text-orange-400 font-semibold tracking-widest uppercase",
+
+    sectionLabel: "text-[10px] font-bold uppercase tracking-widest text-slate-500 mb-2 px-3",
+    navItem: "flex items-center justify-between px-3 py-2 rounded-lg text-xs font-semibold tracking-wide transition-colors my-1 cursor-pointer",
+    navItemActive: "bg-orange-500/10 border border-orange-500/30 text-orange-400",
+    navItemInactive: "text-slate-400 hover:text-slate-200 hover:bg-slate-800/60 border border-transparent",
+    
+    iconActive: "text-orange-400",
+    iconInactive: "text-slate-500 group-hover:text-slate-300",
+    badgeActive: "bg-orange-500/20 text-orange-400 border border-orange-500/30 text-[9px] font-bold px-2 py-0.5 rounded-full",
+    badgeInactive: "bg-slate-800 text-slate-400 text-[9px] font-bold px-2 py-0.5 rounded-full",
+
+    profileCard: "p-2.5 rounded-lg bg-slate-950 border border-slate-800 flex items-center gap-3 mt-auto",
+    avatar: "w-8 h-8 rounded-md bg-slate-800 border border-slate-700 flex items-center justify-center text-xs font-bold text-slate-300",
+    userName: "text-xs font-bold text-slate-200 truncate",
+    userRole: "text-[10px] text-slate-500 truncate",
+    logoutBtn: "p-1.5 rounded-md text-slate-500 hover:text-red-400 hover:bg-slate-800 transition-colors ml-auto"
   }
 };

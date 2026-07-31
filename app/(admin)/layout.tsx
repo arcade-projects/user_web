@@ -44,7 +44,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans flex flex-col lg:flex-row dir-ltr relative">
+    <div className="h-full w-full bg-slate-950 text-slate-100 font-sans flex flex-col lg:flex-row dir-ltr relative overflow-hidden">
       
       <button 
         onClick={() => setIsOpen(!isOpen)} 

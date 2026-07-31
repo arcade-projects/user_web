@@ -151,11 +151,17 @@ class RequestService {
   }
 
   private getHeaders(): Record<string, string> {
-    return {
+    const token = this.cookies.get('token');
+    const headers: Record<string, string> = {
       Accept: APPLICATION_JSON,
-      Authorization: 'Bearer ' + this.cookies.get('token'),
-      'Accept-Language': this.cookies.get('lang') || 'en'
+      'Accept-Language': this.cookies.get('lang') || 'en',
     };
+
+    if (token) {
+      headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    return headers;
   }
 }
 

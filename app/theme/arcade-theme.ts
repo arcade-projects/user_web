@@ -1,5 +1,5 @@
 export const ArcadeNeonTheme = {
-  canvas: "flex flex-col items-center min-h-screen bg-slate-950 text-slate-100 p-6 font-sans select-none overflow-x-hidden",
+  canvas: "flex flex-col items-center justify-center min-h-full w-full bg-slate-950 text-slate-100 p-6 font-sans select-none relative overflow-hidden",
   
   ambientLights: {
     topRed: "absolute top-[-10%] left-[-10%] w-[50%] aspect-square bg-red-900/10 rounded-full blur-[120px] pointer-events-none",

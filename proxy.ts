@@ -1,3 +1,4 @@
+import { jwtVerify } from 'jose';
 import { NextRequest, NextResponse } from 'next/server';
 
 const protectedRoutes = [
@@ -36,29 +37,31 @@ async function isAuthenticated(cookie: string | null): Promise<boolean> {
 }
 
 export default async function proxy(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+const token = request.cookies.get('token')?.value;
 
-  const isProtectedRoute = protectedRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
+if (token) {
+  try {
+    const result = await jwtVerify(
+      token,
+      new TextEncoder().encode(process.env.JWT_SECRET!)
+    );
 
-  const isAuthRoute = authRoutes.some((route) =>
-    pathname.startsWith(route)
-  );
-
-  const cookie = request.headers.get('cookie');
-
-  const authenticated = await isAuthenticated(cookie);
-
-  if (isProtectedRoute && !authenticated) {
-    return NextResponse.redirect(new URL('/login', request.url));
+    return Response.json({
+      ok: true,
+      payload: result.payload,
+    });
+  } catch (e: any) {
+    return Response.json({
+      ok: false,
+      error: e.constructor.name,
+      message: e.message,
+    });
   }
+}
 
-  if (isAuthRoute && authenticated) {
-    return NextResponse.redirect(new URL('/admin', request.url));
-  }
-
-  return NextResponse.next();
+return Response.json({
+  token: false,
+});
 }
 
 export const config = {

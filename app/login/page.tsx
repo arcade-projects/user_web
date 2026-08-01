@@ -47,7 +47,7 @@ export default function LoginPage() {
     setLoading(false);
 
     if (response) {
-      router.push('/admin');
+      router.push('/hotpotato/create');
       router.refresh();
     }
   };

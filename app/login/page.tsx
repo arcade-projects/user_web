@@ -46,7 +46,6 @@ export default function LoginPage() {
 
     setLoading(false);
 
-    // 👈 چون توکن توی HttpOnly Cookie ست می‌شه، وجود پاسخ موفق یا دیتا کاربر کافیه
     if (response) {
       router.push('/admin');
       router.refresh();

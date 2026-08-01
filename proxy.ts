@@ -1,60 +1,64 @@
-import { NextResponse } from 'next/server';
-import type { NextRequest } from 'next/server';
-import { jwtVerify } from 'jose';
+import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = ['/admin', '/hotpotato/create', '/profile', '/lobby'];
-const authRoutes = ['/login', '/verify'];
+const protectedRoutes = [
+  '/admin',
+  '/hotpotato/create',
+  '/profile',
+  '/lobby',
+];
 
-const JWT_SECRET = new TextEncoder().encode(
-  process.env.JWT_SECRET || 'your-secret-key-from-backend'
-);
+const authRoutes = [
+  '/login',
+  '/verify',
+];
 
-async function isTokenValid(token: string): Promise<true | string> {
+async function isAuthenticated(cookie: string | null): Promise<boolean> {
+  if (!cookie) {
+    return false;
+  }
+
   try {
-    await jwtVerify(token, JWT_SECRET);
-    return true;
-  } catch (e: any) {
-    return `${e.constructor.name}: ${e.message}`;
+    const response = await fetch(
+      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/me`,
+      {
+        method: 'GET',
+        headers: {
+          cookie,
+        },
+        cache: 'no-store',
+      }
+    );
+
+    return response.ok;
+  } catch {
+    return false;
   }
 }
 
 export default async function proxy(request: NextRequest) {
+  const { pathname } = request.nextUrl;
 
-return Response.json({
-  envs: Object.keys(process.env)
-    .filter((k) => k.includes("JWT") || k.includes("SECRET"))
-    .sort(),
-});
+  const isProtectedRoute = protectedRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  // const { pathname } = request.nextUrl;
-  // const token = request.cookies.get('token')?.value;
+  const isAuthRoute = authRoutes.some((route) =>
+    pathname.startsWith(route)
+  );
 
-  // console.log('====================');
-  // console.log('PATH:', pathname);
-  // console.log('TOKEN EXISTS:', !!token);
+  const cookie = request.headers.get('cookie');
 
-  // const isProtectedRoute = protectedRoutes.some((route) =>
-  //   pathname.startsWith(route)
-  // );
-  // const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
+  const authenticated = await isAuthenticated(cookie);
 
-  // const result = token ? await isTokenValid(token) : false;
+  if (isProtectedRoute && !authenticated) {
+    return NextResponse.redirect(new URL('/login', request.url));
+  }
 
-  // console.log('PROTECTED:', isProtectedRoute);
-  // console.log('AUTH:', isAuthRoute);
-  // console.log('VALID:', result);
+  if (isAuthRoute && authenticated) {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
 
-  // if (isProtectedRoute && result !== true) {
-  //   return NextResponse.redirect(
-  //     new URL(`/login?error=${encodeURIComponent(String(result))}`, request.url)
-  //   );
-  // }
-
-  // if (isAuthRoute && result === true) {
-  //   return NextResponse.redirect(new URL('/dashboard', request.url));
-  // }
-
-  // return NextResponse.next();
+  return NextResponse.next();
 }
 
 export const config = {

@@ -5,7 +5,6 @@ import { jwtVerify } from 'jose';
 const protectedRoutes = ['/admin', '/hotpotato/create', '/profile', '/lobby'];
 const authRoutes = ['/login', '/verify'];
 
-// SECRET_KEY باید دقیقاً همون راز JWT باشه که توی NestJS گذاشتی (مثلاً از env)
 const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-from-backend'
 );
@@ -27,28 +26,33 @@ async function isTokenValid(token: string): Promise<boolean> {
 }
 
 export async function middleware(request: NextRequest) {
+
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
+
+  console.log('====================');
+  console.log('PATH:', pathname);
+  console.log('TOKEN EXISTS:', !!token);
 
   const isProtectedRoute = protectedRoutes.some((route) =>
     pathname.startsWith(route)
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  // اگر توکن وجود داشت، معتبر بودنش رو چک کن
   const hasValidToken = token ? await isTokenValid(token) : false;
 
-  // ۱. سعی می‌کنه بره صفحات محافظت‌شده ولی توکن معتبر نداره
+  console.log('PROTECTED:', isProtectedRoute);
+  console.log('AUTH:', isAuthRoute);
+  console.log('VALID:', hasValidToken);
+
   if (isProtectedRoute && !hasValidToken) {
     const response = NextResponse.redirect(new URL('/login', request.url));
-    // کوکی نامعتبر/دستکاری شده رو پاک کن
     if (token) {
       response.cookies.delete('token');
     }
     return response;
   }
 
-  // ۲. توکن معتبر داره و می‌خواد بره صفحه لاگین
   if (isAuthRoute && hasValidToken) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }

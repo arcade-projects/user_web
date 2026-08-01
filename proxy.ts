@@ -9,23 +9,16 @@ const JWT_SECRET = new TextEncoder().encode(
   process.env.JWT_SECRET || 'your-secret-key-from-backend'
 );
 
-async function isTokenValid(token: string): Promise<boolean> {
+async function isTokenValid(token: string): Promise<true | string> {
   try {
-    const payload = await jwtVerify(token, JWT_SECRET);
-
-    console.log('VALID TOKEN');
-    console.log(payload);
-
+    await jwtVerify(token, JWT_SECRET);
     return true;
-  } catch (e) {
-    console.log('INVALID TOKEN');
-    console.log(e);
-
-    return false;
+  } catch (e: any) {
+    return `${e.constructor.name}: ${e.message}`;
   }
 }
 
-export async function middleware(request: NextRequest) {
+export default async function proxy(request: NextRequest) {
 
   const { pathname } = request.nextUrl;
   const token = request.cookies.get('token')?.value;
@@ -39,21 +32,19 @@ export async function middleware(request: NextRequest) {
   );
   const isAuthRoute = authRoutes.some((route) => pathname.startsWith(route));
 
-  const hasValidToken = token ? await isTokenValid(token) : false;
+  const result = token ? await isTokenValid(token) : false;
 
   console.log('PROTECTED:', isProtectedRoute);
   console.log('AUTH:', isAuthRoute);
-  console.log('VALID:', hasValidToken);
+  console.log('VALID:', result);
 
-  if (isProtectedRoute && !hasValidToken) {
-    const response = NextResponse.redirect(new URL('/login', request.url));
-    if (token) {
-      response.cookies.delete('token');
-    }
-    return response;
+  if (isProtectedRoute && result !== true) {
+    return NextResponse.redirect(
+      new URL(`/login?error=${encodeURIComponent(String(result))}`, request.url)
+    );
   }
 
-  if (isAuthRoute && hasValidToken) {
+  if (isAuthRoute && result === true) {
     return NextResponse.redirect(new URL('/dashboard', request.url));
   }
 

@@ -12,11 +12,16 @@ const JWT_SECRET = new TextEncoder().encode(
 
 async function isTokenValid(token: string): Promise<boolean> {
   try {
-    // امضا و انقضای توکن بررسی می‌شود
-    await jwtVerify(token, JWT_SECRET);
+    const payload = await jwtVerify(token, JWT_SECRET);
+
+    console.log('VALID TOKEN');
+    console.log(payload);
+
     return true;
-  } catch (error) {
-    // اگر توکن دستکاری شده باشه یا تاریخش گذشته باشه ارور میده
+  } catch (e) {
+    console.log('INVALID TOKEN');
+    console.log(e);
+
     return false;
   }
 }

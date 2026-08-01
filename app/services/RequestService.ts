@@ -27,6 +27,7 @@ class RequestService {
       const response = await fetch(BASE_URL + this.endpoint + params, {
         method: METHOD_GET,
         headers: this.getHeaders(),
+        credentials: 'include',
       });
 
       return await response.json();
@@ -48,12 +49,13 @@ class RequestService {
           ...this.getHeaders(),
           ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
         },
+        credentials: 'include',
         body: isFormData ? payload : JSON.stringify(payload),
       });
 
       const data: ApiResponse = await response.json();
 
-      if (response.status === 200) {
+      if (response.ok) {
         ToastService.updateSuccess(data.message);
       } else {
         ToastService.updateError(data.message);
@@ -74,6 +76,7 @@ class RequestService {
         headers: {
           ...this.getHeaders(),
         },
+        credentials: 'include',
         body: isFormData ? payload : JSON.stringify(payload),
       });
 
@@ -102,12 +105,13 @@ class RequestService {
           ...this.getHeaders(),
           ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
         },
+        credentials: 'include',
         body: isFormData ? payload : JSON.stringify(payload),
       });
 
       const data: ApiResponse = await response.json();
 
-      if (response.status === 200) {
+      if (response.ok) {
         ToastService.updateSuccess(data.message);
       } else {
         ToastService.updateError(data.message);
@@ -132,12 +136,13 @@ class RequestService {
           ...this.getHeaders(),
           ...(isFormData ? {} : { 'Content-Type': APPLICATION_JSON }),
         },
+        credentials: 'include',
         body: isFormData ? payload : JSON.stringify(payload),
       });
 
       const data: ApiResponse = await response.json();
 
-      if (response.status === 200) {
+      if (response.ok) {
         ToastService.updateSuccess(data.message);
       } else {
         ToastService.updateError(data.message);
@@ -151,17 +156,21 @@ class RequestService {
   }
 
   private getHeaders(): Record<string, string> {
-    const token = this.cookies.get('token');
     const headers: Record<string, string> = {
       Accept: APPLICATION_JSON,
       'Accept-Language': this.cookies.get('lang') || 'en',
     };
 
-    if (token) {
-      headers['Authorization'] = `Bearer ${token}`;
-    }
-
     return headers;
+  }
+
+  private async parseResponse(response: Response): Promise<any> {
+    try {
+      const text = await response.text();
+      return text ? JSON.parse(text) : {};
+    } catch {
+      return {};
+    }
   }
 }
 

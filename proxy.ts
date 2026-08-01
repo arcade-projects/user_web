@@ -1,67 +1,44 @@
+import { NextResponse } from 'next/server';
+import type { NextRequest } from 'next/server';
 import { jwtVerify } from 'jose';
-import { NextRequest, NextResponse } from 'next/server';
 
-const protectedRoutes = [
-  '/admin',
-  '/hotpotato/create',
-  '/profile',
-  '/lobby',
-];
+const protectedRoutes = ['/admin', '/hotpotato/create', '/profile', '/lobby'];
+const authRoutes = ['/login', '/verify'];
 
-const authRoutes = [
-  '/login',
-  '/verify',
-];
+const JWT_SECRET = new TextEncoder().encode(process.env.JWT_SECRET!);
 
-async function isAuthenticated(cookie: string | null): Promise<boolean> {
-  if (!cookie) {
-    return false;
-  }
-
+async function isTokenValid(token: string): Promise<boolean> {
   try {
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_BASE_URL}/auth/me`,
-      {
-        method: 'GET',
-        headers: {
-          cookie,
-        },
-        cache: 'no-store',
-      }
-    );
-
-    return response.ok;
+    await jwtVerify(token, JWT_SECRET);
+    return true;
   } catch {
     return false;
   }
 }
 
 export default async function proxy(request: NextRequest) {
-const token = request.cookies.get('token')?.value;
+  const { pathname } = request.nextUrl;
+  const token = request.cookies.get('token')?.value;
 
-if (token) {
-  try {
-    const result = await jwtVerify(
-      token,
-      new TextEncoder().encode(process.env.JWT_SECRET!)
-    );
+  const isProtectedRoute = protectedRoutes.some(route =>
+    pathname.startsWith(route)
+  );
 
-    return Response.json({
-      ok: true,
-      payload: result.payload,
-    });
-  } catch (e: any) {
-    return Response.json({
-      ok: false,
-      error: e.constructor.name,
-      message: e.message,
-    });
+  const isAuthRoute = authRoutes.some(route =>
+    pathname.startsWith(route)
+  );
+
+  const hasValidToken = token ? await isTokenValid(token) : false;
+
+  if (isProtectedRoute && !hasValidToken) {
+    return NextResponse.redirect(new URL('/login', request.url));
   }
-}
 
-return Response.json({
-  token: false,
-});
+  if (isAuthRoute && hasValidToken) {
+    return NextResponse.redirect(new URL('/admin', request.url));
+  }
+
+  return NextResponse.next();
 }
 
 export const config = {

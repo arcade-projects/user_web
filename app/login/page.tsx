@@ -54,12 +54,10 @@ export default function LoginPage() {
 
   return (
     <div className={`${theme.canvas} min-h-screen relative flex items-center justify-center p-4 overflow-hidden`}>
-      {/* افکت‌های نور محیطی (Ambient Lights) */}
       <div className={theme.ambientLights.topRed} />
       <div className={theme.ambientLights.bottomCyan} />
 
       <main className="w-full max-w-md relative z-10 my-auto">
-        {/* هدر برندینگ */}
         <div className="text-center mb-8 space-y-2">
           <h1 className={`${theme.header.title} text-5xl font-extrabold tracking-wider`}>
             ARCADE
@@ -72,7 +70,6 @@ export default function LoginPage() {
           </p>
         </div>
 
-        {/* کارت نئونی فرم */}
         <div className="bg-slate-900/80 backdrop-blur-xl border border-cyan-500/30 rounded-2xl p-6 sm:p-8 shadow-[0_0_30px_rgba(6,182,212,0.15)]">
           {step === 'send' ? (
             <form onSubmit={handleSendOtp} className="space-y-6">

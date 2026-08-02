@@ -6,6 +6,7 @@ import { useParams } from "next/navigation";
 import SocketService from "@/app/services/SocketService";
 import { SoundService } from "@/app/services/AudioService";
 import { Socket } from "socket.io-client";
+import { useTranslations } from "next-intl";
 
 interface Payload {
   sender: string;
@@ -13,6 +14,9 @@ interface Payload {
 }
 
 const HotPotatoPage = () => {
+
+  const t = useTranslations("GameArena");
+  
   const params = useParams();
 
   const [payload, setPayload] = useState<Payload>({ sender: "", text: "" });
@@ -151,7 +155,7 @@ const HotPotatoPage = () => {
         {title && (
           <div className="text-center mb-6">
             <span className="text-[10px] uppercase tracking-widest font-bold px-2.5 py-1 rounded-md bg-cyan-950 text-cyan-400 block w-max mx-auto mb-2 animate-pulse border border-cyan-800/30">
-              Live Arena
+              {t("liveBadge")}
             </span>
             <h2 className={`${theme.card.enTitle} truncate text-2xl`}>
               {title}
@@ -164,7 +168,7 @@ const HotPotatoPage = () => {
           <div className="w-32 h-32 rounded-full border-2 border-orange-500/50 flex flex-col items-center justify-center shadow-[0_0_25px_rgba(249,115,22,0.2),inset_0_0_15px_rgba(249,115,22,0.1)] bg-slate-950 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-t from-orange-500/5 to-transparent pointer-events-none" />
             <span className="text-[10px] uppercase tracking-wider text-orange-400 font-black mb-1 drop-shadow-[0_0_4px_rgba(249,115,22,0.4)]">
-              Timer
+              {t("timerLabel")}
             </span>
             <span className="text-3xl font-black text-slate-100 drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]">
               {timerDisplay}
@@ -176,20 +180,20 @@ const HotPotatoPage = () => {
           <div className="flex items-center justify-between p-4 rounded-xl bg-slate-950/60 border border-slate-800/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] hover:border-cyan-500/30 transition-colors duration-300">
             <span className="text-xs font-bold text-cyan-400 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
-              نوبت:
+              {t("turnLabel")}
             </span>
             <span className="text-sm font-extrabold text-slate-200 tracking-wide">
-              {player || "در حال دریافت..."}
+              {player || t("fetching")}
             </span>
           </div>
 
           <div className="flex items-center justify-between p-4 rounded-xl bg-slate-950/60 border border-slate-800/60 shadow-[inset_0_2px_4px_rgba(0,0,0,0.4)] hover:border-slate-700 transition-colors duration-300">
             <span className="text-xs font-bold text-slate-400 flex items-center gap-2">
               <span className="w-2 h-2 rounded-full bg-slate-600" />
-              نام شما:
+              {t("yourNameLabel")}
             </span>
             <span className="text-sm font-extrabold text-slate-300 tracking-wide">
-              {playerName || "در حال دریافت..."}
+              {playerName || t("fetching")}
             </span>
           </div>
 
@@ -214,7 +218,7 @@ const HotPotatoPage = () => {
             disabled:shadow-none disabled:cursor-not-allowed disabled:opacity-30
           "
         >
-          Click me
+          {t("actionBtn")}
         </button>
 
         {payload?.text && (
@@ -228,7 +232,7 @@ const HotPotatoPage = () => {
         <div className="w-full max-w-md mt-8 relative z-10">
           <div className="flex items-center justify-between mb-3 px-1">
             <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider">
-              بازیکنان حاضر
+              {t("playersTitle")}
             </span>
             <span className="text-[10px] font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
               {players.length}
@@ -266,11 +270,11 @@ const HotPotatoPage = () => {
             </div>
 
             <h3 className="text-3xl font-black tracking-wider text-transparent bg-clip-text bg-gradient-to-r from-red-400 via-rose-500 to-amber-500 uppercase mb-2">
-              Game Over
+              {t("gameOver.title")}
             </h3>
 
             <p className="text-sm text-slate-400 mb-6 font-medium">
-              بازی به پایان رسید! خسته نباشید رفقا.
+              {t("gameOver.subtitle")}
             </p>
 
             <div className="w-20 h-1 bg-gradient-to-r from-red-500 to-orange-500 mx-auto mb-6 rounded-full" />
@@ -279,7 +283,7 @@ const HotPotatoPage = () => {
               onClick={refreshGameHandler}
               className="w-full py-3 bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-700 text-red-400 hover:text-red-300 font-extrabold text-sm uppercase tracking-widest rounded-xl border border-red-500/30 shadow-md active:scale-[0.98] transition-all duration-150 cursor-pointer"
             >
-              شروع مجدد رقابت
+              {t("gameOver.restartBtn")}
             </button>
           </div>
         </div>

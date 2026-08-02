@@ -45,5 +45,69 @@
       "underDev": "در حال توسعه"
     },
     "footer": "© 2026 Arcade Web Platform. All Rights Reserved."
+  },
+  "CreateRoomCard": {
+    "roomAccess": {
+      "badge": "دسترسی به اتاق",
+      "pincodeLabel": "پین‌کد اتاق",
+      "inviteText": "دوستانتان را با اسکن این کد یا وارد کردن پین بالا به بازی دعوت کنید."
+    },
+    "setupRoom": {
+      "badge": "تنظیمات اتاق",
+      "title": "ایجاد بازی جدید",
+      "selectCategories": "انتخاب دسته‌بندی‌ها",
+      "selectedCount": "مورد انتخاب شده",
+      "durationLabel": "زمان بازی (دقیقه)",
+      "durationPlaceholder": "مثلا ۳",
+      "createBtn": "ساخت اتاق",
+      "alreadyHaveRoom": "قبلاً اتاق ساخته‌اید؟",
+      "joinRoomBtn": "ورود به اتاق"
+    },
+    "qrCode": {
+      "title": "کد QR شما",
+      "description": "برای دسترسی سریع به لینک، کد بالا را اسکن کنید.",
+      "generating": "در حال ساخت QR Code...",
+      "generatingSubtitle": "در حال تولید ماتریس"
+    }
+  },
+  "JoinRoomCard": {
+    "badge": "ورود به بازی",
+    "title": "پیوستن به اتاق موجود",
+    "nameLabel": "نام شما",
+    "namePlaceholder": "نام مستعار خود را وارد کنید",
+    "pincodeLabel": "پین‌کد اتاق",
+    "pincodePlaceholder": "کد ۴ یا ۶ رقمی را وارد کنید",
+    "joinBtn": "ورود به اتاق"
+  },
+  "GameArena": {
+    "liveBadge": "زمین بازی",
+    "timerLabel": "زمان‌سنج",
+    "turnLabel": "نوبت:",
+    "yourNameLabel": "نام شما:",
+    "fetching": "در حال دریافت...",
+    "actionBtn": "پاس دادن بمب",
+    "playersTitle": "بازیکنان حاضر",
+    "gameOver": {
+      "title": "پایان بازی",
+      "subtitle": "بازی به پایان رسید! خسته نباشید رفقا.",
+      "restartBtn": "شروع مجدد رقابت"
+    }
+  },
+  "AuthPage": {
+    "header": {
+      "title": "ARCADE",
+      "subtitleEmail": "برای ورود یا ثبت‌نام، ایمیل خود را وارد کنید",
+      "subtitleOtp": "کد ۶ رقمی ارسال‌شده به {{email}} را وارد کنید"
+    },
+    "form": {
+      "emailLabel": "آدرس ایمیل",
+      "emailPlaceholder": "name@example.com",
+      "sendCodeBtn": "ارسال کد تایید",
+      "sendingCode": "در حال ارسال...",
+      "otpLabel": "کد تایید ۶ رقمی",
+      "verifyCodeBtn": "ورود به حساب",
+      "verifyingCode": "در حال بررسی...",
+      "changeEmail": "تغییر آدرس ایمیل"
+    }
   }
 }

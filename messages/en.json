@@ -45,5 +45,69 @@
       "underDev": "Under Development"
     },
     "footer": "© 2026 Arcade Web Platform. All Rights Reserved."
+  },
+  "CreateRoomCard": {
+    "roomAccess": {
+      "badge": "Room Access",
+      "pincodeLabel": "Room PIN",
+      "inviteText": "Invite your friends to the game by scanning this QR code or entering the PIN above."
+    },
+    "setupRoom": {
+      "badge": "Setup Room",
+      "title": "Create New Game",
+      "selectCategories": "Select Categories",
+      "selectedCount": "selected",
+      "durationLabel": "Duration (Minutes)",
+      "durationPlaceholder": "e.g., 3",
+      "createBtn": "Create Room",
+      "alreadyHaveRoom": "Already have a room?",
+      "joinRoomBtn": "Join Room"
+    },
+    "qrCode": {
+      "title": "Your QR Code",
+      "description": "Scan the code above to access the link instantly.",
+      "generating": "Generating QR Code...",
+      "generatingSubtitle": "Generating Matrix"
+    }
+  },
+  "JoinRoomCard": {
+    "badge": "Enter Arena",
+    "title": "Join Existing Room",
+    "nameLabel": "Your Name",
+    "namePlaceholder": "Enter your nickname",
+    "pincodeLabel": "Room Pin Code",
+    "pincodePlaceholder": "Enter 4 or 6-digit code",
+    "joinBtn": "Join Room"
+  },
+  "GameArena": {
+    "liveBadge": "Live Arena",
+    "timerLabel": "Timer",
+    "turnLabel": "Turn:",
+    "yourNameLabel": "Your Name:",
+    "fetching": "Fetching...",
+    "actionBtn": "Pass Bomb",
+    "playersTitle": "Active Players",
+    "gameOver": {
+      "title": "Game Over",
+      "subtitle": "Game over! Great job everyone.",
+      "restartBtn": "Restart Match"
+    }
+  },
+  "AuthPage": {
+    "header": {
+      "title": "ARCADE",
+      "subtitleEmail": "Enter your email to sign in or register",
+      "subtitleOtp": "Enter the 6-digit code sent to {{email}}"
+    },
+    "form": {
+      "emailLabel": "EMAIL ADDRESS",
+      "emailPlaceholder": "name@example.com",
+      "sendCodeBtn": "Send Verification Code",
+      "sendingCode": "Sending...",
+      "otpLabel": "6-DIGIT VERIFICATION CODE",
+      "verifyCodeBtn": "Sign In",
+      "verifyingCode": "Verifying...",
+      "changeEmail": "Change email address"
+    }
   }
 }

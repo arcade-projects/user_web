@@ -45,5 +45,69 @@
       "underDev": "Kehitteillä"
     },
     "footer": "© 2026 Arcade Web Platform. Kaikki oikeudet pidätetään."
+  },
+  "CreateRoomCard": {
+    "roomAccess": {
+      "badge": "Huoneen pääsy",
+      "pincodeLabel": "Huoneen PIN-koodi",
+      "inviteText": "Kutsu ystäväsi peliin skannaamalla tämä QR-koodi tai syöttämällä yllä oleva PIN-koodi."
+    },
+    "setupRoom": {
+      "badge": "Huoneen asetukset",
+      "title": "Luo uusi peli",
+      "selectCategories": "Valitse kategoriat",
+      "selectedCount": "valittu",
+      "durationLabel": "Kesto (Minuuttia)",
+      "durationPlaceholder": "esim. 3",
+      "createBtn": "Luo huone",
+      "alreadyHaveRoom": "Onko sinulla jo huone?",
+      "joinRoomBtn": "Liity huoneeseen"
+    },
+    "qrCode": {
+      "title": "QR-koodisi",
+      "description": "Skannaa yllä oleva koodi päästäksesi linkkiin välittömästi.",
+      "generating": "Luodaan QR-koodia...",
+      "generatingSubtitle": "Luodaan matriisia"
+    }
+  },
+  "JoinRoomCard": {
+    "badge": "Astu Areenalle",
+    "title": "Liity olemassa olevaan huoneeseen",
+    "nameLabel": "Nimesi",
+    "namePlaceholder": "Syötä nimimerkki",
+    "pincodeLabel": "Huoneen PIN-koodi",
+    "pincodePlaceholder": "Syötä 4- tai 6-numeroinen koodi",
+    "joinBtn": "Liity huoneeseen"
+  },
+  "GameArena": {
+    "liveBadge": "Peliareena",
+    "timerLabel": "Ajastin",
+    "turnLabel": "Vuoro:",
+    "yourNameLabel": "Nimesi:",
+    "fetching": "Haetaan...",
+    "actionBtn": "Syötä pommi",
+    "playersTitle": "Paikalla olevat pelaajat",
+    "gameOver": {
+      "title": "Peli päättyi",
+      "subtitle": "Peli on päättynyt! Hyvää työtä kaikille.",
+      "restartBtn": "Aloita uusi ottelu"
+    }
+  },
+  "AuthPage": {
+    "header": {
+      "title": "ARCADE",
+      "subtitleEmail": "Syötä sähköpostiosoitteesi kirjautuaksesi tai rekisteröityäksesi",
+      "subtitleOtp": "Syötä osoitteeseen {{email}} lähetetty 6-numeroinen koodi"
+    },
+    "form": {
+      "emailLabel": "SÄHKÖPOSTIOSOITE",
+      "emailPlaceholder": "nimi@esimerkki.fi",
+      "sendCodeBtn": "Lähetä vahvistuskoodi",
+      "sendingCode": "Lähetetään...",
+      "otpLabel": "6-NUMEROINEN VAHVISTUSKOODI",
+      "verifyCodeBtn": "Kirjaudu sisään",
+      "verifyingCode": "Tarkistetaan...",
+      "changeEmail": "Vaihda sähköpostiosoite"
+    }
   }
 }

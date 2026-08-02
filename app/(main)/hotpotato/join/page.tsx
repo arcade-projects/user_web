@@ -5,8 +5,11 @@ import { ArcadeNeonTheme as theme } from "@/app/theme/arcade-theme";
 import { useRouter } from 'next/navigation';
 import RequestService from "@/app/services/RequestService";
 import React, { useState } from "react";
+import { useTranslations } from "next-intl";
 
 const HotPotatoJoinPage = () => {
+
+    const t = useTranslations("JoinRoomCard");
 
     const router = useRouter();
 
@@ -48,10 +51,10 @@ const HotPotatoJoinPage = () => {
                 
                 <div className="text-center mb-6">
                     <span className={`${theme.card.badge} bg-cyan-950 text-cyan-400 block w-max mx-auto mb-2`}>
-                        Enter Arena
+                        {t("badge")}
                     </span>
                     <h2 className={`${theme.card.enTitle} text-center`}>
-                        Join Existing Room
+                        {t("title")}
                     </h2>
                     <div className={theme.header.divider} />
                 </div>
@@ -59,12 +62,12 @@ const HotPotatoJoinPage = () => {
                 <form onSubmit={onSubmitHandler} className="space-y-5">
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-400 block px-1">
-                            Your Name
+                            {t("nameLabel")}
                         </label>
                         <input 
                             type="text" 
                             name="name" 
-                            placeholder="Enter your nickname" 
+                            placeholder={t("namePlaceholder")} 
                             onChange={onChangeNameHandler} 
                             className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium placeholder-slate-600 focus:outline-none focus:border-cyan-500/60 focus:ring-1 focus:ring-cyan-500/30 transition-all"
                         />
@@ -72,12 +75,12 @@ const HotPotatoJoinPage = () => {
 
                     <div className="space-y-1.5">
                         <label className="text-xs font-bold text-slate-400 block px-1">
-                            Room Pin Code
+                            {t("pincodeLabel")}
                         </label>
                         <input 
                             type="text" 
                             name="pincode" 
-                            placeholder="Enter 4 or 6-digit code" 
+                            placeholder={t("pincodePlaceholder")} 
                             onChange={onChangePincodeHandler}
                             className="w-full p-3.5 rounded-xl bg-slate-950 border border-slate-800 text-slate-200 text-sm font-medium tracking-wider placeholder-slate-600 focus:outline-none focus:border-orange-500/60 focus:ring-1 focus:ring-orange-500/30 transition-all text-left"
                         />
@@ -87,7 +90,7 @@ const HotPotatoJoinPage = () => {
                         type="submit"
                         className="w-full mt-2 py-4 bg-gradient-to-r from-slate-800 to-slate-700 hover:from-slate-700 hover:to-slate-600 text-white font-extrabold uppercase tracking-wider rounded-xl border border-slate-600/50 active:scale-[0.99] transition-all duration-150 shadow-md text-center text-sm cursor-pointer"
                     >
-                        Join Room
+                        {t("joinBtn")}
                     </button>
                 </form>
 

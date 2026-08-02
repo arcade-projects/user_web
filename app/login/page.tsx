@@ -4,8 +4,12 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { ArcadeNeonTheme as theme } from '@/app/theme/arcade-theme';
 import RequestService from '../services/RequestService';
+import { useTranslations } from 'next-intl';
 
 export default function LoginPage() {
+
+  const t = useTranslations("AuthPage");
+
   const [step, setStep] = useState<'send' | 'verify'>('send');
   const [email, setEmail] = useState('');
   const [otp, setOtp] = useState('');
@@ -60,13 +64,11 @@ export default function LoginPage() {
       <main className="w-full max-w-md relative z-10 my-auto">
         <div className="text-center mb-8 space-y-2">
           <h1 className={`${theme.header.title} text-5xl font-extrabold tracking-wider`}>
-            ARCADE
+            {t("header.title")}
           </h1>
           <div className={`${theme.header.divider} mx-auto w-24 h-1 bg-gradient-to-r from-cyan-500 to-pink-500 rounded-full`} />
           <p className={`${theme.header.subtitle} text-sm text-slate-300 font-medium`}>
-            {step === 'send'
-              ? 'برای ورود یا ثبت‌نام، ایمیل خود را وارد کنید'
-              : `کد ۶ رقمی ارسال‌شده به ${email} را وارد کنید`}
+            {t("header.subtitleEmail")}
           </p>
         </div>
 
@@ -75,12 +77,12 @@ export default function LoginPage() {
             <form onSubmit={handleSendOtp} className="space-y-6">
               <div className="space-y-2">
                 <label htmlFor="email" className={`${theme.form.label} text-xs font-bold tracking-wider text-cyan-400 uppercase block`}>
-                  آدرس ایمیل
+                  {t("form.emailLabel")}
                 </label>
                 <input
                   id="email"
                   type="email"
-                  placeholder="name@example.com"
+                  placeholder={t("form.emailPlaceholder")}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   className={`${theme.form.input} w-full px-4 py-3 rounded-xl bg-slate-950/60 border border-slate-700/80 text-white placeholder-slate-500 focus:outline-none focus:border-cyan-400 focus:ring-2 focus:ring-cyan-400/20 transition-all font-mono`}
@@ -100,10 +102,10 @@ export default function LoginPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    در حال ارسال...
+                    {t("form.sendingCode")}
                   </span>
                 ) : (
-                  'ارسال کد تایید'
+                  t("form.sendCodeBtn")
                 )}
               </button>
             </form>
@@ -111,12 +113,12 @@ export default function LoginPage() {
             <form onSubmit={handleVerifyOtp} className="space-y-6">
               <div className="space-y-2">
                 <label htmlFor="otp" className={`${theme.form.label} text-xs font-bold tracking-wider text-pink-400 uppercase block`}>
-                  کد تایید ۶ رقمی
+                  {t("form.otpLabel")}
                 </label>
                 <input
                   id="otp"
                   type="text"
-                  placeholder="123456"
+                  placeholder={t("form.emailPlaceholder")}
                   value={otp}
                   onChange={(e) => setOtp(e.target.value)}
                   maxLength={6}
@@ -138,10 +140,10 @@ export default function LoginPage() {
                       <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                       <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                     </svg>
-                    در حال بررسی...
+                    {t("form.verifyingCode")}
                   </span>
                 ) : (
-                  'ورود به حساب'
+                  t("form.verifyCodeBtn")
                 )}
               </button>
 
@@ -154,7 +156,7 @@ export default function LoginPage() {
                   }}
                   className="text-xs font-semibold text-slate-400 hover:text-cyan-400 transition-colors inline-flex items-center gap-1 cursor-pointer"
                 >
-                  ← تغییر آدرس ایمیل
+                  ← {t("form.changeEmail")}
                 </button>
               </div>
             </form>

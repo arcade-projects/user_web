@@ -16,6 +16,8 @@ import {
   LucideIcon
 } from 'lucide-react';
 import { ArcadeNeonTheme } from '@/app/theme/arcade-theme';
+import RequestService from '../services/RequestService';
+import { useRouter } from 'next/navigation';
 
 interface MenuItem {
   id: string;
@@ -30,6 +32,9 @@ interface DashboardLayoutProps {
 }
 
 export default function DashboardLayout({ children }: DashboardLayoutProps) {
+
+  const router = useRouter();
+
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const pathname = usePathname();
 
@@ -42,6 +47,18 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
     { id: 'users', label: 'Users', href: '/admin/users', icon: Users, badge: '12' },
     { id: 'settings', label: 'Settings', href: '/admin/settings', icon: Settings },
   ];
+
+
+  const handleLogout = async () => {
+    const requestService = new RequestService('/api/v1/auth/logout');
+
+    const response = await requestService.post({});
+
+    if (response) {
+      router.replace('/login');
+      router.refresh();
+    }
+  };
 
   return (
     <div className="h-full w-full bg-slate-950 text-slate-100 font-sans flex flex-col lg:flex-row dir-ltr relative overflow-hidden">
@@ -117,7 +134,7 @@ export default function DashboardLayout({ children }: DashboardLayoutProps) {
             <p className={theme.userName}>Arya Rad</p>
             <p className={theme.userRole}>Level 42 Player</p>
           </div>
-          <button className={theme.logoutBtn} title="Logout">
+          <button onClick={handleLogout} className={theme.logoutBtn} title="Logout">
             <LogOut size={15} />
           </button>
         </div>

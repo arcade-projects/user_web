@@ -47,7 +47,7 @@ const HotPotatoCreatePage = () => {
         e.preventDefault();
 
         const payload = {
-            category_id: selectedCategoryIds[0],
+            category_ids: selectedCategoryIds,
             minutes: minutes
         };
 

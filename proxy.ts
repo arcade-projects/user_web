@@ -35,7 +35,7 @@ export default async function proxy(request: NextRequest) {
   }
 
   if (isAuthRoute && hasValidToken) {
-    return NextResponse.redirect(new URL('/admin', request.url));
+    return NextResponse.redirect(new URL('/hotpotato/create', request.url));
   }
 
   return NextResponse.next();

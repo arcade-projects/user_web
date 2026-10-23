@@ -1,6 +1,6 @@
 import { io, Socket, ManagerOptions, SocketOptions } from 'socket.io-client';
 import Cookies from 'universal-cookie';
-import ToastService from './ToastService'; // در صورت نیاز برای نمایش خطاها یا لودینگ ارتباط
+import ToastService from './ToastService';
 
 const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL;
 
@@ -14,7 +14,6 @@ class SocketService {
     this.cookies = new Cookies(null, { path: '/' });
   }
 
-  // ۱. برقراری اتصال به سرور
   public connect(options: Partial<ManagerOptions & SocketOptions> = {}): Socket {
     if (this.socket?.connected) {
       return this.socket;
@@ -22,13 +21,12 @@ class SocketService {
 
     const token = this.cookies.get('token');
 
-    // ایجاد کانکشن همراه با ارسال توکن در auth (یا headers)
     this.socket = io(`${SOCKET_URL}${this.namespace}`, {
       auth: {
         token: token ? `Bearer ${token}` : undefined,
       },
       autoConnect: true,
-      reconnection: true, // تلاش مجدد خودکار در صورت قطع اتصال
+      reconnection: true,
       reconnectionAttempts: 5,
       reconnectionDelay: 2000,
       ...options,
@@ -39,7 +37,6 @@ class SocketService {
     return this.socket;
   }
 
-  // ۲. قطع اتصال
   public disconnect(): void {
     if (this.socket) {
       this.socket.disconnect();
@@ -47,14 +44,12 @@ class SocketService {
     }
   }
 
-  // ۳. ارسال داده به بک‌اند (معادل Post/Patch در HTTP)
   public emit(event: string, data?: any, callback?: (response: any) => void): void {
     if (!this.socket || !this.socket.connected) {
       this.connect();
     }
 
     if (callback) {
-      // اگر بک‌اند از Acknowledgment پشتیبانی می‌کند
       this.socket?.emit(event, data, (res: any) => {
         callback(res);
       });
@@ -63,7 +58,6 @@ class SocketService {
     }
   }
 
-  // ۴. گوش دادن به یک رویداد خاص از سمت بک‌اند (Listen)
   public on<T = any>(event: string, callback: (data: T) => void): void {
     if (!this.socket) {
       this.connect();
@@ -71,12 +65,10 @@ class SocketService {
     this.socket?.on(event, callback);
   }
 
-  // ۵. لغو گوش دادن به یک رویداد (برای جلوگیری از Memory Leak در کامپوننت‌ها)
   public off(event: string, callback?: (...args: any[]) => void): void {
     this.socket?.off(event, callback);
   }
 
-  // مدیریت رویدادهای عمومی اتصال
   private setupGlobalListeners(): void {
 
     this.socket?.on('connect', () => {
